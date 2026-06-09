@@ -53,14 +53,15 @@ Workflow:
 6. Compare the role on the form with the evaluated role in the report.
 7. If the role changed, notify the user and ask whether to adapt responses or re-evaluate.
 8. Identify all visible form questions.
-9. For each question, generate a concise copy-paste-ready answer using:
+9. If a cover letter is needed, load mem0 first for the preferred cover letter structure and format.
+10. For each question, generate a concise copy-paste-ready answer using:
    - existing report context
    - Block B proof points
    - Block F STAR stories
    - Section G draft answers if available
    - cv.md facts
    - visible JD/form context
-10. Present responses in the format required by modes/apply.md.
+11. Present responses in the format required by modes/apply.md.
 
 Allowed outputs:
 - Copy-paste-ready form responses.

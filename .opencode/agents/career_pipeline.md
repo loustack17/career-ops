@@ -60,7 +60,8 @@ Required files to read before processing:
 Required workflow:
 1. Run `node cv-sync-check.mjs` before processing any pending URL.
 2. Read data/pipeline.md and process only `- [ ]` items in the Pending section.
-3. For each pending URL:
+3. Load mem0 for the preferred resume format and structure.
+4. For each pending URL:
    - Calculate the next sequential report number by listing reports/.
    - Extract the JD using the repo priority order:
      Playwright/browser snapshot first, then WebFetch, then WebSearch.
@@ -70,13 +71,13 @@ Required workflow:
    - Execute A-G evaluation according to modes/oferta.md.
    - Save the report to reports/{###}-{company-slug}-{YYYY-MM-DD}.md.
    - Include Date, URL, Archetype, Score, Legitimacy, and PDF path or pending in the report header.
-   - If score >= 3.0, generate the PDF according to modes/pdf.md or modes/latex.md depending on config/profile.yml.
+   - If score >= 3.6, generate the PDF using the Typst workflow in modes/pdf.md according to config/profile.yml.
    - If score >= 4.5, append draft application answers as section H in the report.
    - Update data/applications.md with the next sequential number, date, company, role, score, status, PDF, and report link.
    - Move the pipeline item from Pending to Processed using the required format:
      `- [x] #NNN | URL | Company | Role | Score/5 | PDF ✅/❌`
-4. If a step fails, continue with the next step when safe and record the failed step as pending in the tracker/report.
-5. At the end, show the summary table required by modes/pipeline.md.
+5. If a step fails, continue with the next step when safe and record the failed step as pending in the tracker/report.
+6. At the end, show the summary table required by modes/pipeline.md.
 
 Allowed edits:
 - data/pipeline.md
