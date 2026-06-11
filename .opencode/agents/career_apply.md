@@ -48,7 +48,7 @@ Workflow:
 1. Detect the current application context from the active page, screenshot, pasted form questions, URL, or user-provided company/role.
 2. Identify company and role.
 3. Search reports/ for an existing matching report.
-4. If a matching report exists, read the full report and Section G / draft answers if present.
+4. If a matching report exists, read the full report, Block G legitimacy, and Section H draft answers if present.
 5. If no matching report exists, notify the user and offer to run pipeline first. Do not run pipeline unless explicitly requested.
 6. Compare the role on the form with the evaluated role in the report.
 7. If the role changed, notify the user and ask whether to adapt responses or re-evaluate.
@@ -58,7 +58,7 @@ Workflow:
    - existing report context
    - Block B proof points
    - Block F STAR stories
-   - Section G draft answers if available
+   - Section H draft answers if available
    - cv.md facts
    - visible JD/form context
 11. Present responses in the format required by modes/apply.md.
