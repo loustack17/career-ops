@@ -6,6 +6,7 @@ data/scan-history.tsv
 data/parser-output/**/*.json
 !data/parser-output/.gitkeep
 !data/parser-output/**/.gitkeep
+data/cache/ats-companies/
 reports/**/*.md
 !reports/.gitkeep
 output/**
@@ -47,6 +48,8 @@ bun.lock
 bun.lockb
 pnpm-lock.yaml
 yarn.lock
+# Report-number reservation sentinels (ephemeral, created by reserve-report-num.mjs)
+reports/*-RESERVED.md
 
 # Backup files written by normalize-statuses.mjs / dedup-tracker.mjs
 *.bak
@@ -74,3 +77,6 @@ dashboard/dashboard
 linkedin-batch.txt
 .mcp.json
 .playwright-mcp/
+
+# Planning (local scratchpad)
+plan/
