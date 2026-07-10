@@ -19,12 +19,13 @@
 13. Apply the six-second clarity gate from `modes/heuristics/recruiter-side.md`: top third must make target role, strongest fit, and proof obvious
 14. Prefer Typst in this repo/branch. Use `templates/cv-template.typ` first unless the user explicitly asks for HTML or Canva.
 15. Read `name` from `config/profile.yml` → normalize to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
-16. Build a Typst payload JSON using the same tailored content (summary, competencies, reordered experience, projects, education, certifications, skills)
-17. Write payload to `/tmp/cv-{candidate}-{company}.json`
-18. Execute: `typst compile --root . --input payload=../../../../tmp/cv-{candidate}-{company}.json templates/cv-template.typ output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf`
-19. Delete `/tmp/cv-{candidate}-{company}.json` after successful compile
-20. If Typst is unavailable or the user explicitly asks for HTML, fall back to the HTML template path below
-21. Report: PDF path, number of pages, keyword coverage %
+16. Read `modes/_custom.md` if it exists and apply its formatting/content house rules to the tailored CV.
+17. Build a Typst payload JSON using the same tailored content (summary, competencies, reordered experience, projects, education, certifications, skills)
+18. Write payload to `/tmp/cv-{candidate}-{company}.json`
+19. Execute: `typst compile --root . --input payload=../../../../tmp/cv-{candidate}-{company}.json templates/cv-template.typ output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf`
+20. Delete `/tmp/cv-{candidate}-{company}.json` after successful compile
+21. If Typst is unavailable or the user explicitly asks for HTML, fall back to the HTML template path below
+22. Report: PDF path, number of pages, keyword coverage %
 
 ## ATS Rules (clean parsing)
 
@@ -131,7 +132,7 @@ Examples of legitimate reformulation:
 
 ## Template HTML
 
-Fallback only when Typst is unavailable or the user explicitly asks for HTML. Use the template in `cv-template.html`. Replace the `{{...}}` placeholders with personalized content:
+Fallback only when Typst is unavailable or the user explicitly asks for HTML. Before generating, read `modes/_custom.md` if it exists and apply its formatting/content house rules to every CV in this session, including every item of a batch. Use the template in `cv-template.html`. Replace the `{{...}}` placeholders with personalized content:
 
 | Placeholder | Content |
 |-------------|-----------|
