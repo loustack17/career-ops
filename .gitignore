@@ -107,6 +107,8 @@ data/model-blacklist.json
 .claude/memory/
 .opencode/settings.local.json
 .opencode/memory/
+/.scan-artifacts/
+/config.json
 career-dashboard
 career-dashboard.exe
 package-lock.json
