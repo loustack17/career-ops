@@ -11,6 +11,8 @@ permission:
   lsp: allow
   webfetch: allow
   websearch: allow
+  "mem0_*": allow
+  "mcp__mem0*": allow
   external_directory: deny
   bash:
     "*": ask
@@ -43,6 +45,15 @@ Read first:
 5. `data/scan-history.tsv` if exists
 6. `data/applications.md`
 7. `data/pipeline.md`
+8. `modes/_profile.md` if it exists — target roles, location policy, and archetype framing for scan filters
+9. `modes/_custom.md` if it exists — user house rules take precedence over defaults
+
+Memory/context:
+- Search mem0 before a real scan or when filters are unclear.
+- Use canonical mem0 filters: `{"AND":[{"user_id":"career"},{"agent_id":"career-ops"},{"app_id":"opencode"}]}`.
+- Query for Career-Ops scan policy, location rules, target roles, source preferences, and current user constraints.
+- Core truth remains `modes/scan.md`, `portals.yml`, and current repo data. Mem0 supplements user preferences and never overrides explicit current config.
+- Pass relevant mem0 scan/location constraints to Level 0-3 sidecars.
 
 Flow:
 1. Level 0 → `career_scan_level0`; collect `local_parser_ok`.

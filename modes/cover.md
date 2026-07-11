@@ -269,7 +269,59 @@ End the draft with: "How does this read? Once you approve I'll generate the PDF.
 
 Only after explicit user approval.
 
-Assemble the JSON payload:
+Prefer Typst on this branch. Use `templates/cover-letter-template.typ` first; fall back to `node generate-cover-letter.mjs` only when Typst is unavailable or the user explicitly asks for the legacy HTML path.
+
+### Typst path (preferred)
+
+Assemble the JSON payload matching `templates/cover-letter-template.typ` (see `examples/cover-letter-payload.example.json`):
+
+```json
+{
+  "meta": {
+    "candidate_name": "{from profile.yml}",
+    "company": "{company name}",
+    "role": "{exact from JD}",
+    "language": "en",
+    "paper_size": "letter"
+  },
+  "identity": {
+    "full_name": "{from profile.yml}"
+  },
+  "letter": {
+    "salutation": "{approved salutation, e.g. 'Dear Hiring Manager,'}",
+    "body": [
+      "{approved opening paragraph}",
+      "{approved profile intro + achievements paragraph}",
+      "{approved problems paragraph}"
+    ],
+    "closing": "Sincerely,"
+  }
+}
+```
+
+**Payload rules:**
+- `letter.body` is an array of plain-text paragraphs — the template renders each as a block with 2em spacing
+- Merge the approved draft sections (opening, profile intro, achievements, problems, closing) into 3-4 body paragraphs
+- `identity` only needs `full_name` (the CV already has all contact info)
+- No header, contacts row, date, or recipient address block — the template is content-only
+- If the user confirmed a language closing (Step 5), append it as the last body paragraph in italic (wrap text in `_..._` for Typst italic)
+
+Write payload to `/tmp/cover-payload-{company-slug}.json`.
+
+Run:
+```bash
+typst compile --root . --input payload=../../../../tmp/cover-payload-{company-slug}.json templates/cover-letter-template.typ output/{company-slug}-{role-slug}-cover.pdf
+```
+
+Delete `/tmp/cover-payload-{company-slug}.json` after successful compile.
+
+Report the output path and file size.
+
+### HTML path (fallback)
+
+Use only when `typst` is unavailable or the user explicitly asks for the legacy HTML path.
+
+Assemble the JSON payload for `generate-cover-letter.mjs`:
 
 ```json
 {
