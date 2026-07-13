@@ -24,7 +24,7 @@ Export a tailored, ATS-optimized CV as PDF via `typst compile`.
 ### Payload and compile (Typst-specific)
 
 13. Read `candidate.full_name` from `config/profile.yml` → normalize to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
-14. Write a JSON payload to `output/{YYYY-MM-DD}/payload.json` with this structure:
+14. Write a temporary JSON payload with this structure:
     ```json
     {
       "meta": {
@@ -55,10 +55,11 @@ Export a tailored, ATS-optimized CV as PDF via `typst compile`.
       "skills": [{ "category": "...", "items": ["..."] }]
     }
     ```
-    **CRITICAL:** Pull all identity fields (full_name, location, email, linkedin, github, portfolio_url) from `config/profile.yml`. Never invent or omit contact info.
-15. Run: `typst compile --root . --input payload=../output/{YYYY-MM-DD}/payload.json templates/cv-template.typ output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf`
-16. **Delete** `payload.json` from `output/{YYYY-MM-DD}/` — keep only the PDF
-17. Report: PDF path, file size, section count, keyword coverage %
+    **CRITICAL:** Pull full_name, location, email, linkedin, github, and portfolio_url from `config/profile.yml`. Omit phone from every resume payload and rendered artifact.
+15. Build and retain the matching HTML dashboard artifact with `build-cv-html.mjs`. It is a web/dashboard source artifact and must never be used as the PDF renderer.
+16. Run `node generate-typst-pdf.mjs <payload.json|dashboard.html> output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4} --report={NNN}`.
+17. Delete standalone temporary payload files after successful generation. The dashboard HTML embeds the structured payload needed for Typst regeneration.
+18. Verify the PDF is exactly one page and report: PDF path, file size, section count, keyword coverage %.
 
 **Requires:** `typst` on PATH (`brew install typst` or `cargo install typst-cli`).
 
@@ -75,7 +76,7 @@ Export a tailored, ATS-optimized CV as PDF via `typst compile`.
 ## Template
 
 Single-file: `templates/cv-template.typ`
-Fonts: `fonts/Inter-*.ttf`
+Fonts: Helvetica Neue or Helvetica, with Liberation Sans as the compatible fallback
 
 ### CV Data Injection
 
@@ -152,6 +153,6 @@ No header, no contacts row, no date, no recipient address block. The CV already 
 
 **Key differences from CV template:**
 - No header/contacts — CV already has them
-- Inter 11pt, 1.25in margins, no gradient or color
+- Helvetica Neue or Helvetica 11pt, 1.25in margins, no gradient or color
 - `identity` only needs `full_name` (for the signature)
 - `letter` only needs `salutation`, `body`, `closing`

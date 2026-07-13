@@ -26,10 +26,12 @@
 16. Read `modes/_custom.md` if it exists and apply its formatting/content house rules to the tailored CV.
 17. Build a Typst payload JSON using the same tailored content (summary, competencies, reordered experience, projects, education, certifications, skills)
 18. Write payload to `/tmp/cv-{candidate}-{company}.json`
-19. Execute: `typst compile --root . --input payload=../../../../tmp/cv-{candidate}-{company}.json templates/cv-template.typ output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf`
+19. Execute: `node generate-typst-pdf.mjs /tmp/cv-{candidate}-{company}.json output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4} --report={NNN}`
 20. Delete `/tmp/cv-{candidate}-{company}.json` after successful compile
-21. If Typst is unavailable or the user explicitly asks for HTML, fall back to the HTML template path below
-22. Report: PDF path, number of pages, keyword coverage %
+21. Build the matching HTML artifact for dashboard viewing and Typst regeneration; do not render a PDF from HTML
+22. Run `node generate-typst-pdf.mjs` and require an exactly one-page result
+23. If Typst is unavailable, stop and report the missing dependency without generating a PDF
+24. Report: PDF path, number of pages, keyword coverage %
 
 ## ATS Rules (clean parsing)
 
@@ -104,7 +106,7 @@ Write a JSON payload to `/tmp/cv-{candidate}-{company}.json`:
 Run:
 
 ```bash
-typst compile --root . --input payload=../../../../tmp/cv-{candidate}-{company}.json templates/cv-template.typ output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf
+node generate-typst-pdf.mjs /tmp/cv-{candidate}-{company}.json output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4} --report={NNN}
 ```
 
 ### Typst rules
@@ -113,7 +115,7 @@ typst compile --root . --input payload=../../../../tmp/cv-{candidate}-{company}.
 - Pull `candidate_name`, contacts, and location from `config/profile.yml`
 - Keep `projects` empty if `cv.md` has no dedicated Projects section
 - Delete the payload JSON from `/tmp` after successful compile
-- If `typst` is missing from PATH, fall back to the HTML path below
+- If `typst` is missing from PATH, stop without generating a PDF
 
 ## Section order (optimized "6-second recruiter scan")
 
@@ -136,7 +138,7 @@ Examples of legitimate reformulation:
 
 ## Template HTML
 
-Fallback only when Typst is unavailable or the user explicitly asks for HTML. Before generating, read `modes/_custom.md` if it exists and apply its formatting/content house rules to every CV in this session, including every item of a batch. Use the template in `cv-template.html`. Replace the `{{...}}` placeholders with personalized content:
+Build this HTML only as the retained web-dashboard artifact. Before generating, read `modes/_custom.md` if it exists and apply its formatting/content house rules to every CV in this session, including every item of a batch. The HTML must embed the structured payload through `build-cv-html.mjs`; never pass it to `generate-pdf.mjs`.
 
 **Before generating: read `modes/_custom.md` (if it exists) and apply its formatting/content house rules to every CV in this session — including every item of a batch.** Rules recorded there (date formats, section-order preferences, content to always/never include) are persistent user instructions, not suggestions; if the user corrects the same thing twice in conversation, write it into `modes/_custom.md` so it stops drifting.
 
@@ -165,7 +167,6 @@ Write a JSON file with this structure, then run `node build-cv-html.mjs <input.j
   "page_format": "letter",
   "candidate": {
     "name": "Jane Smith",
-    "phone": "+1 415 555 0100",
     "email": "jane@example.com",
     "linkedin": { "url": "https://linkedin.com/in/janesmith", "display": "linkedin.com/in/janesmith" },
     "portfolio": { "url": "https://janesmith.dev", "display": "janesmith.dev" },
@@ -213,9 +214,8 @@ Write a JSON file with this structure, then run `node build-cv-html.mjs <input.j
 | Field | Type | Notes |
 |-------|------|-------|
 | `lang` | string | CV language code (`en`, `es`, `ja`, `ar`). Drives language-specific CSS: `ja` enables a CJK font fallback so Japanese renders instead of tofu (□); `ar` enables RTL + Arabic fonts. Defaults to `en`. |
-| `page_format` | string | `letter` → `8.5in` page width, `a4` → `210mm`. Defaults to `letter`. Pass the SAME value to `generate-pdf.mjs --format`. |
+| `page_format` | string | `letter` → `8.5in` page width, `a4` → `210mm`. Defaults to `letter`. Pass the same value to `generate-typst-pdf.mjs --format`. |
 | `candidate.name` | string | From `profile.yml`. |
-| `candidate.phone` | string | Optional — **omit or leave empty** to drop the `tel:` link and its separator (no empty cell). |
 | `candidate.email` | string | From `profile.yml`. |
 | `candidate.linkedin` | `{url, display}` | Optional — omit to drop the item and its separator. |
 | `candidate.portfolio` | `{url, display}` | Optional — omit to drop the item and its separator. |
@@ -318,7 +318,7 @@ d. Report: PDF path, file size, Canva design URL (for manual tweaking)
 
 #### Error handling
 
-- If `import-design-from-url` fails → fall back to HTML/PDF pipeline with message
+- If `import-design-from-url` fails → return to the Typst PDF pipeline with a message
 - If text elements can't be mapped → warn user, show what was found, ask for manual mapping
 - If `find_and_replace_text` finds no matches → try broader substring matching
 - Always provide the Canva design URL so the user can edit manually if auto-edit fails
@@ -344,7 +344,7 @@ If the user says yes, run the full cover letter flow from `modes/cover.md` in sl
 4. Surface any gaps (Step 5)
 5. Ask the four prompts: why / problems / approach / tone (Step 6)
 6. Draft in chat, wait for approval (Steps 7-8)
-7. Generate cover letter PDF via `node generate-cover-letter.mjs` (Step 9)
+7. Generate the cover letter PDF through the Typst path in `modes/cover.md` (Step 9)
 8. Report both PDF paths
 
 Do not auto-generate the cover letter PDF without going through the interactive steps above.

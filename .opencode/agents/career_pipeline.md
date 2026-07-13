@@ -27,6 +27,7 @@ permission:
     "node reserve-report-num.mjs --gc": allow
     "node generate-latex.mjs *": ask
     "node merge-tracker.mjs": allow
+    "node generate-typst-pdf.mjs *": allow
     "typst --version": allow
     "typst compile *": allow
     "pdflatex *": ask
@@ -91,7 +92,7 @@ Required workflow:
    - Save the report to reports/{###}-{company-slug}-{YYYY-MM-DD}.md with A-G.
    - Include Date, URL, Archetype, Score, Legitimacy, and PDF path or pending in the report header.
    - If score >= `auto_pdf_score_threshold`, generate the resume PDF using Typst (`templates/cv-template.typ`) according to modes/pdf.md and config/profile.yml.
-   - Verify each generated resume PDF is exactly one page, follows mem0 forbidden-content rules, and leaves no temporary `.html`, payload, or intermediate Typst files.
+   - Verify each generated resume PDF is exactly one page, follows mem0 forbidden-content rules, retains the matching dashboard HTML artifact, and leaves no standalone payload or intermediate Typst files.
    - If score < threshold, skip PDF and set header PDF to `not generated — run /career-ops pdf {company-slug} to create on demand`.
    - If score >= 4.5, append draft application answers as section H in the report.
    - Append `## Cover Letter Draft` according to modes/oferta.md and modes/cover.md. This is a placeholder draft for apply mode; do not generate cover-letter PDF during pipeline.
@@ -118,7 +119,7 @@ Hard rules:
 - Do not edit cv.md, config/profile.yml, modes/_profile.md, article-digest.md, portals.yml, or writing-samples/* during pipeline processing.
 - Do not run scan unless the user explicitly asked for scan.
 - Pipeline generates resume PDFs only. Do not generate final cover letters or cover-letter PDFs during pipeline; only append the draft section required by modes/oferta.md for apply mode.
-- Do not use Playwright/Chromium for resume or cover-letter PDF generation on this branch. Use Typst templates (`templates/cv-template.typ`, `templates/cover-letter-template.typ`). Do not call `node generate-pdf.mjs` or `node generate-cover-letter.mjs` unless the user explicitly asks for the legacy HTML fallback.
+- Do not use Playwright/Chromium, `node generate-pdf.mjs`, or `node generate-cover-letter.mjs` for resume or cover-letter PDF generation. Use Typst through `node generate-typst-pdf.mjs` for resumes and `templates/cover-letter-template.typ` for cover letters.
 - Do not add new pending URLs except when converting an inaccessible job into an approved local:jds/*.md fallback.
 - Do not allocate report numbers by scanning filenames; use `node reserve-report-num.mjs`.
 - Do not invent candidate experience, skills, metrics, salary data, company facts, or posting status.

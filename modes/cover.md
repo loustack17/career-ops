@@ -24,7 +24,7 @@ Do not generate a generic or placeholder cover letter under any circumstances.
 ## Step 1 — Load candidate profile
 
 Read `config/profile.yml` for:
-- `candidate.name`, `email`, `phone`, `location`, `linkedin`, `github`
+- `candidate.name`, `email`, `location`, `linkedin`, `github`
 - `candidate.credentials` (derive from cv.md Education + Certifications if not in profile.yml)
 - `cover_letter.notice_period_days` (default: omit if key absent)
 - `cover_letter.primary_domain` (default: infer from cv.md if absent)
@@ -276,9 +276,9 @@ Fill the resolved template's `{{...}}` placeholders. A non-zero exit means the n
 
 Only after explicit user approval.
 
-Prefer Typst on this branch. Use `templates/cover-letter-template.typ` first; fall back to `node generate-cover-letter.mjs` only when Typst is unavailable or the user explicitly asks for the legacy HTML path.
+Use `templates/cover-letter-template.typ` for every cover-letter PDF. If Typst is unavailable, stop and report the missing dependency.
 
-### Typst path (preferred)
+### Typst path (required)
 
 Assemble the JSON payload matching `templates/cover-letter-template.typ` (see `examples/cover-letter-payload.example.json`):
 
@@ -313,59 +313,15 @@ Assemble the JSON payload matching `templates/cover-letter-template.typ` (see `e
 - No header, contacts row, date, or recipient address block — the template is content-only
 - If the user confirmed a language closing (Step 5), append it as the last body paragraph in italic (wrap text in `_..._` for Typst italic)
 
-Write payload to `/tmp/cover-payload-{company-slug}.json`.
+Write payload to `/tmp/cover-payload-{company-slug}.json`. Resolve the output directory and filename from `config/profile.yml`; default to `/home/lou/Documents/Job/CVs/Cover Letters/{YYYY-MM-DD}/{company}-{role}-cover.pdf`.
 
 Run:
 ```bash
-typst compile --root . --input payload=../../../../tmp/cover-payload-{company-slug}.json templates/cover-letter-template.typ output/{company-slug}-{role-slug}-cover.pdf
+mkdir -p "/home/lou/Documents/Job/CVs/Cover Letters/{YYYY-MM-DD}"
+typst compile --root . --input payload=../../../../tmp/cover-payload-{company-slug}.json templates/cover-letter-template.typ "/home/lou/Documents/Job/CVs/Cover Letters/{YYYY-MM-DD}/{company-slug}-{role-slug}-cover.pdf"
 ```
 
 Delete `/tmp/cover-payload-{company-slug}.json` after successful compile.
-
-Report the output path and file size.
-
-### HTML path (fallback)
-
-Use only when `typst` is unavailable or the user explicitly asks for the legacy HTML path.
-
-Assemble the JSON payload for `generate-cover-letter.mjs`:
-
-```json
-{
-  "candidate": {
-    "name": "{from profile.yml}",
-    "email": "{from profile.yml}",
-    "phone": "{from profile.yml, omit if empty}",
-    "location": "{from profile.yml}",
-    "linkedin": "{from profile.yml, omit if empty}",
-    "github": "{from profile.yml, omit if empty}",
-    "credentials": ["{degree}", "{MBA}", "{cert}"]
-  },
-  "letter": {
-    "role_title": "{exact from JD}",
-    "company": "{company name}",
-    "city": "{JD city}",
-    "date": "{YYYY-MM-DD}",
-    "greeting": "{optional salutation, e.g. 'Dear Jane Smith,'; omit the key to skip the salutation}",
-    "opening": "{approved opening paragraph}",
-    "profile_intro": "{approved profile intro}",
-    "achievements": [
-      {"lead": "...", "impact": "..."}
-    ],
-    "problems_section": "{approved problems paragraph}",
-    "closing": "{approved closing}",
-    "language_closing": "{approved language sentence or null}"
-  },
-  "output_path": "output/{company-slug}-{role-slug}-cover.pdf"
-}
-```
-
-Write payload to `/tmp/cover-payload-{company-slug}.json`.
-
-Run:
-```bash
-node generate-cover-letter.mjs --payload /tmp/cover-payload-{company-slug}.json
-```
 
 Report the output path and file size.
 
@@ -389,4 +345,4 @@ When invoked as `/career-ops cover {slug}`:
 2. Extract the `## Cover Letter Draft` section — use it as a pre-populated starting point for the draft
 3. Run all steps as normal (research, keywords, prompts, gaps) — the draft is a starting point, not the final output
 4. When presenting the draft in Step 8, show what was auto-generated and what was changed based on the user's answers
-5. After PDF generation, update the report's `## Cover Letter Draft` section with a note: `PDF generated: output/{path} on {date}`
+5. After PDF generation, update the report's `## Cover Letter Draft` section with the exact PDF path and date

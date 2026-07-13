@@ -42,18 +42,19 @@ Read first:
 2. `DATA_CONTRACT.md`
 3. `modes/scan.md`
 4. `portals.yml`
-5. `data/scan-history.tsv` if exists
-6. `data/applications.md`
-7. `data/pipeline.md`
-8. `modes/_profile.md` if it exists — target roles, location policy, and archetype framing for scan filters
-9. `modes/_custom.md` if it exists — user house rules take precedence over defaults
+5. `config/profile.yml` — accepted IC levels, company-size preference, remote-from-Canada eligibility, and commute boundary
+6. `data/scan-history.tsv` if exists
+7. `data/applications.md`
+8. `data/pipeline.md`
+9. `modes/_profile.md` if it exists — target roles, location policy, and archetype framing for scan filters
+10. `modes/_custom.md` if it exists — user house rules take precedence over defaults
 
 Memory/context:
 - Search mem0 before a real scan or when filters are unclear.
 - Use canonical mem0 filters: `{"AND":[{"user_id":"career"},{"agent_id":"career-ops"},{"app_id":"opencode"}]}`.
 - Query for Career-Ops scan policy, location rules, target roles, source preferences, and current user constraints.
 - Core truth remains `modes/scan.md`, `portals.yml`, and current repo data. Mem0 supplements user preferences and never overrides explicit current config.
-- Pass relevant mem0 scan/location constraints to Level 0-3 sidecars.
+- Pass the current portals/profile rules to Level 0-3 sidecars: accept IC roles from Entry/Junior through Staff/Principal, prioritize startup and mid-size companies without excluding other sizes, allow worldwide employers for remote roles that can be performed from Canada, and constrain hybrid/on-site roles to Toronto/GTA/about one hour from Toronto.
 
 Flow:
 1. Level 0 → `career_scan_level0`; collect `local_parser_ok`.

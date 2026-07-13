@@ -44,7 +44,7 @@
   margin: page-margin,
 )
 
-#set text(font: ("Inter",), size: 11pt, fill: rgb("#1a1a1a"))
+#set text(font: ("Helvetica Neue", "Helvetica", "Liberation Sans"), size: 11pt, fill: rgb("#1a1a1a"))
 #set par(justify: false, leading: 12pt, first-line-indent: 0pt)
 #set block(spacing: 0pt, above: 0pt, below: 0pt)
 

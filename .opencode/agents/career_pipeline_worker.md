@@ -20,6 +20,7 @@ permission:
     "pwd": allow
     "rg *": allow
     "node generate-latex.mjs *": ask
+    "node generate-typst-pdf.mjs *": allow
     "typst --version": allow
     "typst compile *": allow
   edit:
@@ -56,7 +57,7 @@ Do:
 - A-G evaluation
 - assigned report `.md` with required Cover Letter Draft
 - assigned PDF only if score >= threshold
-- one-page PDF verification, forbidden-content check, and temporary `.html`/payload/intermediate Typst cleanup when PDF is generated
+- one-page PDF verification, forbidden-content check, retained dashboard HTML, and standalone payload/intermediate Typst cleanup when PDF is generated
 - Section H only if score >= 4.5
 - Cover Letter Draft placeholder only; no cover-letter PDF. Pipeline workers generate resume PDFs only.
 - assigned TSV tracker addition
@@ -74,6 +75,6 @@ Never:
 - edit system-layer or user profile files
 - invent facts
 - use Playwright/Chromium for resume or cover-letter PDF generation
-- call `node generate-pdf.mjs` or `node generate-cover-letter.mjs` unless parent explicitly requests legacy HTML fallback
+- call `node generate-pdf.mjs` or `node generate-cover-letter.mjs`
 
 Return artifact paths, score, status, PDF yes/no, and failures.

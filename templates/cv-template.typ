@@ -39,8 +39,8 @@
 
 // === Colors ===
 #let accent = rgb("#186b8c")
-#let accent-2 = rgb("#9a7ae6")
-#let purple = rgb("#8f42c7")
+#let accent-2 = rgb("#244a73")
+#let purple = rgb("#244a73")
 #let body = rgb("#1a1a2e")
 #let text-dark = rgb("#333333")
 #let text-mid = rgb("#444444")
@@ -54,8 +54,8 @@
 #let contact-separator-color = rgb("#cccccc")
 
 // === Fonts ===
-#let base-font = ("Inter",)
-#let heading-font = ("Inter",)
+#let base-font = ("Helvetica Neue", "Helvetica", "Liberation Sans")
+#let heading-font = ("Helvetica Neue", "Helvetica", "Liberation Sans")
 #let base-size = 8.75pt
 #let base-leading = 5.5pt
 

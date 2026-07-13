@@ -39,7 +39,7 @@ type PipelineOpenPDFMsg struct {
 	Path string
 }
 
-// PipelineGeneratePDFMsg requests a PDF regeneration via generate-pdf.mjs
+// PipelineGeneratePDFMsg requests a PDF regeneration via generate-typst-pdf.mjs
 // from the application's recorded source HTML. Paths are relative to
 // CareerOpsPath (as recorded in the manifest).
 type PipelineGeneratePDFMsg struct {
@@ -584,7 +584,7 @@ func (m PipelineModel) handleKey(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 				m.flash = "Source HTML missing: " + entry.HTMLPath
 				return m, nil
 			}
-			m.flash = "Regenerating PDF via generate-pdf.mjs — this takes a few seconds..."
+			m.flash = "Regenerating PDF via Typst — this takes a few seconds..."
 			path, report := m.careerOpsPath, entry.ReportNumber
 			html, pdf, format := entry.HTMLPath, entry.PDFPath, entry.Format
 			return m, func() tea.Msg {

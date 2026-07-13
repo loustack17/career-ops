@@ -124,6 +124,7 @@ const SYSTEM_PATHS = [
   'KIMI.md',
   'build-dashboard.mjs',
   'generate-pdf.mjs',
+  'generate-typst-pdf.mjs',
   'generate-latex.mjs',
   'extract-latex-content.mjs',
   'patch-latex-content.mjs',

@@ -28,6 +28,7 @@ Context:
 - Use parent-provided `modes/scan.md`, `portals.yml`, `local_parser_ok`, and relevant mem0 scan/location constraints.
 - If parent omitted mem0 constraints and search filters are ambiguous, search mem0 with filters `{"AND":[{"user_id":"career"},{"agent_id":"career-ops"},{"app_id":"opencode"}]}` for Career-Ops scan policy, location rules, source preferences, and target roles.
 - Do not write mem0.
+- Run startup and mid-size priority queries first, then retain broader enabled queries. Preserve all accepted IC levels and company sizes.
 
 Scope:
 - run enabled `search_queries`

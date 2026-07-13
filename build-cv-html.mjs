@@ -13,7 +13,7 @@
 //
 // The script does NOT parse cv.md / YAML: the authoritative read of the source
 // files stays in the agent (same contract as build-cv-latex.mjs / modes/latex.md).
-// generate-pdf.mjs remains the single PDF renderer and is unchanged.
+// The retained HTML artifact embeds the same payload consumed by the Typst PDF renderer.
 
 import { readFile, writeFile, stat, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
@@ -180,22 +180,21 @@ ${items}
 }
 
 // Rebuild the whole .contact-row block. Its markup uses fixed "|" separators
-// between phone / email / linkedin / portfolio / location, so an absent optional
-// field (phone, linkedin, portfolio) must drop BOTH its <a> and one separator.
+// between email / linkedin / portfolio / location, so an absent optional
+// field must drop BOTH its <a> and one separator.
 // Building the present items and joining them is more robust than excising
 // separators from the template one placeholder at a time.
 function buildContactRow(candidate) {
   const c = candidate || {};
   const items = [];
-  if (c.phone) {
-    const tel = sanitizeUrl('tel:' + String(c.phone).replace(/\s+/g, ''));
-    items.push(`<a href="${tel}">${escapeHtml(c.phone)}</a>`);
-  }
   if (c.email) {
     items.push(`<a href="${sanitizeUrl('mailto:' + c.email)}">${escapeHtml(c.email)}</a>`);
   }
   if (c.linkedin && c.linkedin.url) {
     items.push(`<a href="${sanitizeUrl(c.linkedin.url)}">${escapeHtml(c.linkedin.display || c.linkedin.url)}</a>`);
+  }
+  if (c.github && c.github.url) {
+    items.push(`<a href="${sanitizeUrl(c.github.url)}">${escapeHtml(c.github.display || c.github.url)}</a>`);
   }
   if (c.portfolio && c.portfolio.url) {
     items.push(`<a href="${sanitizeUrl(c.portfolio.url)}">${escapeHtml(c.portfolio.display || c.portfolio.url)}</a>`);
@@ -258,6 +257,8 @@ function renderHtml(template, payload) {
   if (unresolved) {
     throw new Error(`Unresolved placeholders: ${[...new Set(unresolved)].join(', ')}`);
   }
+  const encodedPayload = Buffer.from(JSON.stringify(payload), 'utf8').toString('base64');
+  html = html.replace('</body>', `<!-- career-ops-cv-payload:${encodedPayload} -->\n</body>`);
   return html;
 }
 
@@ -358,7 +359,6 @@ async function runSelfTest() {
     page_format: 'letter',
     candidate: {
       name: 'Test Candidate',
-      phone: '+1 234 567 8900',
       email: 'test@example.com',
       linkedin: { url: 'https://linkedin.com/in/test', display: 'linkedin.com/in/test' },
       portfolio: { url: 'https://test.example.com', display: 'test.example.com' },

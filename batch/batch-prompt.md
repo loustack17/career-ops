@@ -41,8 +41,8 @@ Examples:
 | Profile config | `config/profile.yml` if it exists | Always; identity, output language, comp range, target roles |
 | Portfolio digest | `article-digest.md` if it exists | Always; proof points and metrics |
 | llms.txt | `llms.txt` if it exists | Always |
-| CV template | `templates/cv-template.html` | For PDF |
-| PDF renderer | `generate-pdf.mjs` | For PDF |
+| CV templates | `templates/cv-template.typ` + `templates/cv-template.html` | Typst PDF + dashboard HTML |
+| PDF renderer | `generate-typst-pdf.mjs` | For every PDF |
 | States | `templates/states.yml` | Tracker status labels |
 
 Rules:
@@ -332,7 +332,7 @@ Then include:
 
 **Gate:** Read `config/profile.yml` → `auto_pdf_score_threshold`. If the key is absent, default to **`3.8`** (the typst-dev gate of Path A). This step ONLY runs when the score from Paso 2 is **≥ the resolved threshold**. For everything below it, skip this entire step — the user can generate a tailored PDF on demand later via `/career-ops pdf {company-slug}` using the report from Paso 3 as input.
 
-**Rationale:** Generating a tailored PDF costs ~30–60s per offer (Playwright launch + HTML render) and produces files that often go unused — most roles score 2.x/low-3.x and never reach application. The `3.8` default matches Path A's typst-dev behavior; raise `auto_pdf_score_threshold` (e.g. `4.0`) to pre-generate fewer PDFs, or set `0` to generate one for every offer. Both Path A (`/career-ops pipeline`) and Path B (this batch worker) read the same config key for consistency.
+**Rationale:** Generating and verifying a tailored PDF adds work per offer and produces files that often go unused — most roles score 2.x/low-3.x and never reach application. The `3.8` default matches Path A's typst-dev behavior; raise `auto_pdf_score_threshold` (e.g. `4.0`) to pre-generate fewer PDFs, or set `0` to generate one for every offer. Both Path A (`/career-ops pipeline`) and Path B (this batch worker) read the same config key for consistency.
 - `## Machine Summary`
 - `## A) Role Summary`
 - `## B) CV Match`
@@ -358,7 +358,7 @@ Only generate the PDF when the score from Step 2 is greater than or equal to the
 
 If score is greater than or equal to the threshold:
 
-1. Read `cv.md`, `article-digest.md`, and `templates/cv-template.html`.
+1. Read `cv.md`, `article-digest.md`, `templates/cv-template.typ`, and `templates/cv-template.html`.
 2. Extract 15-20 JD keywords.
 3. Use `language.output` for CV prose.
 4. Choose paper format: US/Canada -> `letter`; otherwise `a4`.
@@ -368,11 +368,11 @@ If score is greater than or equal to the threshold:
 8. Reorder experience bullets by relevance.
 9. Build a 6-8 item competency grid.
 10. Inject keywords ethically into existing achievements; never invent skills or metrics.
-11. Write HTML to `output/cv-candidate-{company-slug}.html`.
+11. Write the dashboard HTML artifact to `output/cv-candidate-{company-slug}.html` using `build-cv-html.mjs`; it embeds the structured payload for Typst regeneration.
 12. Run:
 
 ```bash
-node generate-pdf.mjs \
+node generate-typst-pdf.mjs \
   output/cv-candidate-{company-slug}.html \
   output/cv-candidate-{company-slug}-{{DATE}}.pdf \
   --format={letter|a4} \
