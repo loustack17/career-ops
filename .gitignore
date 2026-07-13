@@ -4,11 +4,15 @@ data/applications.md
 data/applications.db
 data/follow-ups.md
 data/salary-observations.tsv
+data/status-log.tsv
+data/assessments.tsv
 data/pipeline.md
 data/scan-history.tsv
 data/scan-runs.tsv
+data/blacklist.md
 data/pdf-index.tsv
 data/agent-inbox.md
+data/active-interviews.md
 data/reply-candidates.json
 data/parser-output/**/*.json
 !data/parser-output/.gitkeep
@@ -18,6 +22,7 @@ data/cache/ats-companies/
 data/offers/*
 !data/offers/.gitkeep
 reports/**/*.md
+data/upskill/
 !reports/.gitkeep
 output/**
 !output/.gitkeep
@@ -62,6 +67,8 @@ writing-samples/*
 # User config and customization (never auto-updated)
 config/profile.yml
 article-digest.md
+config/cv-facts.json
+config/benchmarks.yml
 portals.yml
 modes/_profile.md
 modes/_custom.md
@@ -131,3 +138,6 @@ linkedin-batch.txt
 
 # Planning (local scratchpad)
 plan/
+
+# Web
+.career-ops-web/logo-cache/
