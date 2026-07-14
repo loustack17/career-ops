@@ -84,7 +84,7 @@ templates/cv-template.html → PDF generation template
 ## File Naming Conventions
 
 - Reports: `{###}-{company-slug}-{YYYY-MM-DD}.md` (3-digit zero-padded)
-- PDFs: `cv-candidate-{company-slug}-{YYYY-MM-DD}.pdf`
+- CV artifacts: `output/{YYYY-MM-DD}/cv-{company}-{short-role}-{candidate}-{YYYY-MM-DD}.{pdf,html,tex}`; collisions append `-v2`, `-v3` through `reserve-cv-output.mjs`. Cover letters follow their independent rule in `modes/cover.md`.
 - Tracker TSVs: `batch/tracker-additions/{id}.tsv`
 
 ## Pipeline Integrity

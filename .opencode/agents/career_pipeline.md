@@ -25,6 +25,7 @@ permission:
     "node reserve-report-num.mjs": allow
     "node reserve-report-num.mjs --release *": allow
     "node reserve-report-num.mjs --gc": allow
+    "node reserve-cv-output.mjs *": allow
     "node generate-latex.mjs *": ask
     "node merge-tracker.mjs": allow
     "node generate-typst-pdf.mjs *": allow
@@ -71,7 +72,7 @@ Required files to read before processing:
 17. reports/ for existing reports and reserved sentinels
 18. mem0 search with filters `{"AND":[{"user_id":"career"},{"agent_id":"career-ops"},{"app_id":"opencode"}]}` for Career-Ops report, resume, PDF, Typst, forbidden-content, proof-point, and formatting rules before writing reports or PDFs
 19. templates/cv-template.typ before generating resume PDFs
-20. modes/typst.md for Typst compile commands, payload schema, and fallback rules
+20. modes/typst.md for required Typst compile commands and payload schema
 21. modes/heuristics/recruiter-side.md for recruiter-side risk map and six-second clarity gate before writing report summaries or generating PDFs
 22. modes/_custom.md if it exists — user house rules take precedence over defaults
 
@@ -91,7 +92,7 @@ Required workflow:
    - Execute A-G evaluation according to modes/oferta.md.
    - Save the report to reports/{###}-{company-slug}-{YYYY-MM-DD}.md with A-G.
    - Include Date, URL, Archetype, Score, Legitimacy, and PDF path or pending in the report header.
-   - If score >= `auto_pdf_score_threshold`, generate the resume PDF using Typst (`templates/cv-template.typ`) according to modes/pdf.md and config/profile.yml.
+   - If score >= `auto_pdf_score_threshold`, reserve matching application-facing HTML/PDF paths with `reserve-cv-output.mjs`, then generate the resume using Typst (`templates/cv-template.typ`) according to modes/pdf.md and config/profile.yml.
    - Verify each generated resume PDF is exactly one page, follows mem0 forbidden-content rules, retains the matching dashboard HTML artifact, and leaves no standalone payload or intermediate Typst files.
    - If score < threshold, skip PDF and set header PDF to `not generated — run /career-ops pdf {company-slug} to create on demand`.
    - If score >= 4.5, append draft application answers as section H in the report.
@@ -122,6 +123,7 @@ Hard rules:
 - Do not use Playwright/Chromium, `node generate-pdf.mjs`, or `node generate-cover-letter.mjs` for resume or cover-letter PDF generation. Use Typst through `node generate-typst-pdf.mjs` for resumes and `templates/cover-letter-template.typ` for cover letters.
 - Do not add new pending URLs except when converting an inaccessible job into an approved local:jds/*.md fallback.
 - Do not allocate report numbers by scanning filenames; use `node reserve-report-num.mjs`.
+- Do not construct resume filenames manually or overwrite existing artifacts; use `node reserve-cv-output.mjs` and release its reservation after both artifacts exist or on failure.
 - Do not invent candidate experience, skills, metrics, salary data, company facts, or posting status.
 - If salary/company/hiring data is unavailable, state that it is unavailable instead of guessing.
 - If a required file edit is blocked by permissions, stop that item and report the exact file and reason.

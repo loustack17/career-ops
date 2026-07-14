@@ -54,7 +54,7 @@ Memory/context:
 - Use canonical mem0 filters: `{"AND":[{"user_id":"career"},{"agent_id":"career-ops"},{"app_id":"opencode"}]}`.
 - Query for Career-Ops scan policy, location rules, target roles, source preferences, and current user constraints.
 - Core truth remains `modes/scan.md`, `portals.yml`, and current repo data. Mem0 supplements user preferences and never overrides explicit current config.
-- Pass the current portals/profile rules to Level 0-3 sidecars: accept IC roles from Entry/Junior through Staff/Principal, prioritize startup and mid-size companies without excluding other sizes, allow worldwide employers for remote roles that can be performed from Canada, and constrain hybrid/on-site roles to Toronto/GTA/about one hour from Toronto.
+- Pass the current portals/profile rules to Level 0-3 sidecars: preserve `title_filter.priority` order, enforce positive/negative title filters, accept IC roles from Entry/Junior through Staff/Principal, prioritize startup and mid-size companies without excluding other sizes, allow worldwide employers for remote roles that can be performed from Canada, and constrain hybrid/on-site roles to Toronto/GTA/about one hour from Toronto.
 
 Flow:
 1. Level 0 → `career_scan_level0`; collect `local_parser_ok`.

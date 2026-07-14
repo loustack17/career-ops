@@ -13,30 +13,31 @@
 6. Detect company location → paper format:
    - US/Canada → `letter`
    - Rest of the world → `a4`
-6. Detect role archetype → adapt framing
-7. Build an internal recruiter-side risk map from the JD using `modes/heuristics/recruiter-side.md`: likely doubts, matching evidence, and which document section should address each doubt
-8. Rewrite Professional Summary by injecting JD keywords + exit narrative bridge ("Built and sold a business. Now applying systems thinking to [JD domain].")
-9. Select top 3-4 most relevant projects for the job
-10. Reorder experience bullets by JD relevance and by the risk map: strongest matching evidence first
-11. Build competency grid from JD requirements (6-8 keyword phrases)
-12. Inject keywords naturally into existing achievements (NEVER invent)
-13. Apply the six-second clarity gate from `modes/heuristics/recruiter-side.md`: top third must make target role, strongest fit, and proof obvious
-14. Prefer Typst in this repo/branch. Use `templates/cv-template.typ` first unless the user explicitly asks for HTML or Canva.
-15. Read `name` from `config/profile.yml` → normalize to kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
-16. Read `modes/_custom.md` if it exists and apply its formatting/content house rules to the tailored CV.
-17. Build a Typst payload JSON using the same tailored content (summary, competencies, reordered experience, projects, education, certifications, skills)
-18. Write payload to `/tmp/cv-{candidate}-{company}.json`
-19. Execute: `node generate-typst-pdf.mjs /tmp/cv-{candidate}-{company}.json output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4} --report={NNN}`
-20. Delete `/tmp/cv-{candidate}-{company}.json` after successful compile
-21. Build the matching HTML artifact for dashboard viewing and Typst regeneration; do not render a PDF from HTML
-22. Run `node generate-typst-pdf.mjs` and require an exactly one-page result
-23. If Typst is unavailable, stop and report the missing dependency without generating a PDF
-24. Report: PDF path, number of pages, keyword coverage %
+7. Detect role archetype → adapt framing
+8. Build an internal recruiter-side risk map from the JD using `modes/heuristics/recruiter-side.md`: likely doubts, matching evidence, and which document section should address each doubt
+9. Rewrite the Professional Summary from verified `cv.md` evidence, leading with the target role, years of experience, strongest relevant value, and supported JD keywords
+10. Omit the Projects section and reserve the space for Work Experience
+11. Rewrite and reorder experience bullets by JD relevance and by the risk map. Keep 3-5 distinct bullets for every role that has at least 3 verified source bullets. Choose the structure from verified evidence: Impact/Outcome, Scope/Scale, Action/Problem, and How/Mechanism. Lead with a measured outcome when one exists; otherwise lead naturally with the problem, action, scope, or enabled capability. Scale may be traffic, users, engineers, APIs, clients, records, duration, system breadth, operational criticality, or team leverage. Each bullet needs one main claim and concrete proof, but does not need all four components. Never invent abstract value.
+12. Build competency grid from JD requirements (6-8 keyword phrases)
+13. Inject keywords naturally into existing achievements (NEVER invent)
+14. Apply the six-second clarity gate from `modes/heuristics/recruiter-side.md`: top third must make target role, strongest fit, and proof obvious
+15. Run a human-voice gate before rendering. Reject the draft if an eligible role has fewer than 3 bullets, its strongest relevant outcome or scale was dropped, bullets repeat the same sentence pattern, implementation inventories bury the claim, wording is stiff or abstract, or the candidate could not say it naturally in an interview. Prefer ordinary verbs and mix metric-first, problem-first, scope-first, action-first, and short technical bullets.
+16. Use `templates/cv-template.typ` for every resume PDF. HTML remains a dashboard artifact only.
+17. Read `candidate.full_name` from `config/profile.yml` and choose a concise role label that preserves the advertised level and core role, such as `Senior Backend Engineer`.
+18. Reserve the output pair by running `node reserve-cv-output.mjs --company="{company}" --role="{short role}" --candidate="{candidate}" --date="{YYYY-MM-DD}"`. Use the returned `html`, `pdf`, and `reservation` paths exactly.
+19. Read `modes/_custom.md` if it exists and apply its formatting/content house rules to the tailored CV.
+20. Build a Typst payload JSON using the same tailored content (summary, competencies, strengthened experience, education, certifications, skills); set `projects` to an empty array.
+21. Write the payload to `/tmp/{reserved basename}.json`.
+22. Build the dashboard HTML at the reserved `html` path using `build-cv-html.mjs`.
+23. Execute `node generate-typst-pdf.mjs /tmp/{reserved basename}.json "{reserved pdf path}" --format={letter|a4} --report={NNN}` and require an exactly one-page result. The report number remains internal metadata and never appears in the filename.
+24. Delete the temporary payload and release the filename reservation with `node reserve-cv-output.mjs --release="{reservation path}"` after both artifacts exist. Release the reservation on failure as well.
+25. If Typst is unavailable, stop and report the missing dependency without generating a PDF.
+26. Report: PDF path, number of pages, keyword coverage %.
 
 ## ATS Rules (clean parsing)
 
 - Single-column layout (no sidebars, no parallel columns)
-- Standard headers: "Professional Summary", "Work Experience", "Education", "Skills", "Certifications", "Projects"
+- Standard headers: "Professional Summary", "Work Experience", "Education & Certifications", "Skills"
 - No text in images/SVGs
 - No critical info in PDF headers/footers (ATS ignores them)
 - UTF-8, selectable text (not rasterized)
@@ -53,22 +54,21 @@
 
 ## PDF Design
 
-- **Fonts**: Space Grotesk (headings, 600-700) + DM Sans (body, 400-500)
-- **Fonts self-hosted**: `fonts/`
-- **Header**: name in Space Grotesk 24px bold + gradient line `linear-gradient(to right, hsl(187,74%,32%), hsl(270,70%,45%))` 2px + contact row
-- **Section headers**: Space Grotesk 13px, uppercase, letter-spacing 0.05em, color cyan primary
-- **Body**: DM Sans 11px, line-height 1.5
-- **Company names**: accent purple color `hsl(270,70%,45%)`
+- **Fonts**: Helvetica Neue, with Liberation Sans as the compatible fallback
+- **Header**: 18pt bold name, dark cyan-to-dark-blue divider, compact contact row
+- **Section headers**: uppercase, dark cyan, compact divider
+- **Body**: 8.75pt with compact single-page spacing
+- **Company names**: dark blue
 - **Margins**: 0.6in
 - **Background**: pure white
 
-## Template Typst (preferred in this repo)
+## Template Typst (required in this repo)
 
-Use `templates/cv-template.typ` first on this branch.
+Use `templates/cv-template.typ` for every resume PDF in this repository.
 
 ### Typst payload
 
-Write a JSON payload to `/tmp/cv-{candidate}-{company}.json`:
+Write a JSON payload to `/tmp/{reserved basename}.json`:
 
 ```json
 {
@@ -103,17 +103,24 @@ Write a JSON payload to `/tmp/cv-{candidate}-{company}.json`:
 
 ### Typst compile
 
-Run:
+Reserve matching application and dashboard filenames first:
 
 ```bash
-node generate-typst-pdf.mjs /tmp/cv-{candidate}-{company}.json output/{YYYY-MM-DD}/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4} --report={NNN}
+node reserve-cv-output.mjs --company="{company}" --role="{short role}" --candidate="{candidate}" --date="{YYYY-MM-DD}"
+node build-cv-html.mjs /tmp/{reserved basename}.json "{reserved html path}"
+node generate-typst-pdf.mjs /tmp/{reserved basename}.json "{reserved pdf path}" --format={letter|a4} --report={NNN}
+node reserve-cv-output.mjs --release="{reservation path}"
 ```
+
+The first filename is `cv-{company}-{short-role}-{candidate}-{YYYY-MM-DD}`. If either matching artifact already exists or another worker holds the name, the resolver appends `-v2`, then `-v3`, without overwriting files. PDF and HTML must share the resolved basename.
 
 ### Typst rules
 
 - Use the same content generation rules as this mode — do not invent a separate summary style, section order, or keyword strategy
 - Pull `candidate_name`, contacts, and location from `config/profile.yml`
-- Keep `projects` empty if `cv.md` has no dedicated Projects section
+- Keep `projects` empty
+- Display completed education with graduation year only
+- Render education and certifications under one `Education & Certifications` heading
 - Delete the payload JSON from `/tmp` after successful compile
 - If `typst` is missing from PATH, stop without generating a PDF
 
@@ -123,9 +130,8 @@ node generate-typst-pdf.mjs /tmp/cv-{candidate}-{company}.json output/{YYYY-MM-D
 2. Professional Summary (3-4 lines, keyword-dense)
 3. Core Competencies (6-8 keyword phrases in flex-grid)
 4. Work Experience (reverse chronological)
-5. Projects (top 3-4 most relevant)
-6. Education & Certifications
-7. Skills (languages + technical)
+5. Education & Certifications
+6. Skills (languages + technical)
 
 ## Keyword injection strategy (ethical, truth-based)
 
@@ -177,9 +183,7 @@ Write a JSON file with this structure, then run `node build-cv-html.mjs <input.j
     "summary": "Professional Summary",
     "competencies": "Core Competencies",
     "experience": "Work Experience",
-    "projects": "Projects",
-    "education": "Education",
-    "certifications": "Certifications",
+    "education": "Education & Certifications",
     "skills": "Skills"
   },
   "summary": "Personalized summary with JD keywords injected (honest vs cv.md).",
@@ -190,12 +194,10 @@ Write a JSON file with this structure, then run `node build-cv-html.mjs <input.j
       "role": "Job Title",
       "location": "Remote",
       "dates": "June 2022 - Present",
-      "bullets": ["Achievement bullet with JD keywords injected", "Another quantified-impact bullet"]
+      "bullets": ["Strongest quantified outcome", "Relevant system-scale achievement", "Business-value achievement"]
     }
   ],
-  "projects": [
-    { "name": "Project Name", "badge": "Open Source", "tech": "Python, FastAPI", "description": "What it does." }
-  ],
+  "projects": [],
   "education": [
     { "title": "B.S. Computer Science", "org": "University Name", "year": "2022", "description": "Optional line." }
   ],
@@ -225,7 +227,6 @@ Write a JSON file with this structure, then run `node build-cv-html.mjs <input.j
 | `summary` | string | Personalized summary with keywords. |
 | `competencies` | string[] | 6-8 keyword phrases → competency tags. |
 | `experience[]` | object | `company`, `role`, `location` (optional), `dates`, `bullets` (reordered, keyword-injected). |
-| `projects[]` | object | `name`, `badge` (optional), `tech` (optional), `description` (a `bullets` array is also accepted and joined into the description line). |
 | `education[]` | object | `title` (degree), `org` (institution), `year`, `description` (optional). |
 | `certifications[]` | object | `title`, `org`, `year`. |
 | `skills[]` | object | `category` + `items` (comma-separated string or string array). |
@@ -240,88 +241,6 @@ The `{{PHOTO}}` slot is **off by default** and intentionally market-specific:
 - **US / UK / Canada / Australia and many ATS-first markets**: photos are discouraged and can trip bias-avoidance filters. Leave `candidate.photo` empty — the `{{PHOTO}}` line is dropped entirely, no `<img>` is emitted, and the CV renders **pixel-for-pixel identical** to today's photoless layout.
 
 When set, the photo floats into the top corner (mirrored for RTL/Arabic) and the header/summary text wraps beside it; `.cv-photo` in `cv-template.html` controls its size and framing.
-
-## Canva CV Generation (optional)
-
-If `config/profile.yml` has `cv.canva_resume_design_id` set, offer the user a choice before generating:
-- **"HTML/PDF (fast, ATS-optimized)"** — existing flow above
-- **"Canva CV (visual, design-preserving)"** — new flow below
-
-If the user has no `cv.canva_resume_design_id`, skip this prompt and use the HTML/PDF flow.
-
-### Canva workflow
-
-#### Step 1 — Duplicate the base design
-
-a. `export-design` the base design (using `cv.canva_resume_design_id`) as PDF → get download URL
-b. `import-design-from-url` using that download URL → creates a new editable design (the duplicate)
-c. Note the new `design_id` for the duplicate
-
-#### Step 2 — Read the design structure
-
-a. `get-design-content` on the new design → returns all text elements (richtexts) with their content
-b. Map text elements to CV sections by content matching:
-   - Look for the candidate's name → header section
-   - Look for "Summary" or "Professional Summary" → summary section
-   - Look for company names from cv.md → experience sections
-   - Look for degree/school names → education section
-   - Look for skill keywords → skills section
-c. If mapping fails, show the user what was found and ask for guidance
-
-#### Step 3 — Generate tailored content
-
-Same content generation as the HTML flow (Steps 1-11 above):
-- Rewrite Professional Summary with JD keywords + exit narrative
-- Reorder experience bullets by JD relevance
-- Select top competencies from JD requirements
-- Inject keywords naturally (NEVER invent)
-
-**IMPORTANT — Character budget rule:** Each replacement text MUST be approximately the same length as the original text it replaces (within ±15% character count). If tailored content is longer, condense it. The Canva design has fixed-size text boxes — longer text causes overlapping with adjacent elements. Count the characters in each original element from Step 2 and enforce this budget when generating replacements.
-
-#### Step 4 — Apply edits
-
-a. `start-editing-transaction` on the duplicate design
-b. `perform-editing-operations` with `find_and_replace_text` for each section:
-   - Replace summary text with tailored summary
-   - Replace each experience bullet with reordered/rewritten bullets
-   - Replace competency/skills text with JD-matched terms
-   - Replace project descriptions with top relevant projects
-c. **Reflow layout after text replacement:**
-   After applying all text replacements, the text boxes auto-resize but neighboring elements stay in place. This causes uneven spacing between work experience sections. Fix this:
-   1. Read the updated element positions and dimensions from the `perform-editing-operations` response
-   2. For each work experience section (top to bottom), calculate where the bullets text box ends: `end_y = top + height`
-   3. The next section's header should start at `end_y + consistent_gap` (use the original gap from the template, typically ~30px)
-   4. Use `position_element` to move the next section's date, company name, role title, and bullets elements to maintain even spacing
-   5. Repeat for all work experience sections
-d. **Verify layout before commit:**
-   - `get-design-thumbnail` with the transaction_id and page_index=1
-   - Visually inspect the thumbnail for: text overlapping, uneven spacing, text cut off, text too small
-   - If issues remain, adjust with `position_element`, `resize_element`, or `format_text`
-   - Repeat until layout is clean
-e. Show the user the final preview and ask for approval
-f. `commit-editing-transaction` to save (ONLY after user approval)
-
-#### Step 5 — Export and download PDF
-
-a. `export-design` the duplicate as PDF (format: a4 or letter based on JD location)
-b. **IMMEDIATELY** download the PDF using Bash:
-   ```bash
-   curl -sL -o "output/cv-{candidate}-{company}-canva-{YYYY-MM-DD}.pdf" "{download_url}"
-   ```
-   The export URL is a pre-signed S3 link that expires in ~2 hours. Download it right away.
-c. Verify the download:
-   ```bash
-   file output/cv-{candidate}-{company}-canva-{YYYY-MM-DD}.pdf
-   ```
-   Must show "PDF document". If it shows XML or HTML, the URL expired — re-export and retry.
-d. Report: PDF path, file size, Canva design URL (for manual tweaking)
-
-#### Error handling
-
-- If `import-design-from-url` fails → return to the Typst PDF pipeline with a message
-- If text elements can't be mapped → warn user, show what was found, ask for manual mapping
-- If `find_and_replace_text` finds no matches → try broader substring matching
-- Always provide the Canva design URL so the user can edit manually if auto-edit fails
 
 ## Cover Letter Sub-flow
 

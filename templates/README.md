@@ -6,31 +6,26 @@ System-layer template files used by career-ops scripts and modes. These files ar
 
 | File | Used By | Purpose |
 |------|---------|---------|
-| `cv-template.html` | `generate-pdf.mjs` | HTML/CSS template for ATS-optimized CV PDFs |
-| `resume-template.html` | `generate-pdf.mjs` (via `--template`) | Resume-branded variant of `cv-template.html`. Same layout and placeholder tokens; differs in: `<title>` reads "Resume" instead of "CV", omits Certifications section, targets 1–2 page US/industry format. See detailed section below. |
+| `cv-template.typ` | `generate-typst-pdf.mjs` | Required Typst renderer for resume PDFs |
+| `cv-template.html` | `build-cv-html.mjs` | HTML/CSS dashboard artifact matching the Typst resume structure |
+| `resume-template.html` | `build-cv-html.mjs` (via template selection) | Resume-branded HTML variant; only the document title differs from `cv-template.html` |
 | `cv-template.tex` | `generate-latex.mjs` | LaTeX/Overleaf template for ATS-optimized CV PDFs |
 | `portals.example.yml` | Onboarding | Example portal scanner configuration (copy to `portals.yml` to activate) |
 | `states.yml` | `verify-pipeline.mjs`, `normalize-statuses.mjs`, `merge-tracker.mjs` | Canonical application states and their aliases |
 
 ### cv-template.html
 
-The HTML template rendered by Playwright into PDF. Uses placeholder tokens (`{{NAME}}`, `{{SUMMARY_TEXT}}`, `{{EXPERIENCE}}`, etc.) that the PDF pipeline fills at generation time.
+The HTML dashboard template. Uses placeholder tokens (`{{NAME}}`, `{{SUMMARY_TEXT}}`, `{{EXPERIENCE}}`, etc.) that `build-cv-html.mjs` fills from the same payload used by Typst.
 
-**Design:** Space Grotesk headings + DM Sans body, single-column ATS-safe layout, self-hosted fonts from `fonts/`.
+**Design:** Helvetica Neue with Liberation Sans fallback, single-column ATS-safe layout.
 
 **Customization:** Edit this file to change colors, spacing, or section order. The placeholder tokens are documented in `batch/batch-prompt.md` under "Template placeholders."
 
 ### resume-template.html
 
-Resume-branded variant of `cv-template.html` for US/industry job applications. Key differences from the CV template:
+Resume-branded dashboard variant of `cv-template.html`. It uses the same structure and placeholder tokens; only the document title reads "Resume".
 
-- **Title** reads "Resume" instead of "CV"
-- **No Certifications section** — resumes focus on recent, relevant experience
-- **Designed for 1–2 pages** — omits academic-style sections
-
-Otherwise uses the same placeholder tokens (`{{NAME}}`, `{{SUMMARY_TEXT}}`, etc.) and is fully compatible with the existing PDF pipeline.
-
-**Keep in sync:** When updating `cv-template.html`, apply matching changes to `resume-template.html` (preserving the differences noted above).
+**Keep in sync:** When updating `cv-template.html`, apply the same change to `resume-template.html` and preserve the title difference.
 
 ### cv-template.tex
 
@@ -40,11 +35,9 @@ LaTeX template for Overleaf-compatible CV generation. Based on the [sb2nov/resum
 
 **Usage:**
 ```bash
-# Validate and compile .tex → .pdf (requires pdflatex on PATH)
-node generate-latex.mjs output/cv-name-company-date.tex
-
-# Or specify a custom output path
-node generate-latex.mjs output/cv-name-company-date.tex output/custom-name.pdf
+node reserve-cv-output.mjs --company="Acme" --role="Backend Engineer" --candidate="Jane Smith" --date="2026-07-13"
+node generate-latex.mjs "{reserved tex path}" "{reserved pdf path}"
+node reserve-cv-output.mjs --release="{reservation path}"
 ```
 
 **Prerequisites:** `pdflatex` via [MiKTeX](https://miktex.org/) (Windows) or TeX Live (Linux/macOS). First compilation may auto-install missing LaTeX packages. Alternatively, upload the `.tex` file directly to [Overleaf](https://www.overleaf.com) — no local install needed.

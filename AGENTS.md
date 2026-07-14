@@ -103,6 +103,7 @@ AI-powered, CLI-agnostic job search automation: pipeline tracking, offer evaluat
 | `templates/cv-template.tex` | LaTeX/Overleaf template for CVs |
 | `templates/cv-template.typ` | Typst template for CVs |
 | `generate-pdf.mjs` | Playwright: HTML to PDF |
+| `reserve-cv-output.mjs` | Atomically reserves matching application-facing CV PDF/HTML/LaTeX paths; uses `-v2`, `-v3` on collisions |
 | `generate-latex.mjs` | LaTeX CV validator + pdflatex compiler |
 | `article-digest.md` | Compact proof points from portfolio (optional) |
 | `interview-prep/story-bank.md` | Accumulated STAR+R stories across evaluations |
@@ -407,6 +408,7 @@ When spawning headless workers for batch processing, use the appropriate command
 - JDs in `jds/` (referenced as `local:jds/{file}` in pipeline.md)
 - Batch in `batch/` (gitignored except scripts and prompt)
 - Report numbering: sequential 3-digit zero-padded, max existing + 1
+- Resume filenames: `output/{YYYY-MM-DD}/cv-{company}-{short-role}-{candidate}-{YYYY-MM-DD}` with the same basename for every generated `.pdf`, `.html`, or `.tex` artifact. Use `reserve-cv-output.mjs`; report numbers never appear in application filenames and collisions append `-v2`, `-v3` without overwriting. Cover letters keep their independent rule from `modes/cover.md`.
 - **RULE: After each batch of evaluations, run `node merge-tracker.mjs`** to merge tracker additions and avoid duplications.
 - **RULE: NEVER create new entries in applications.md if company+role already exists.** Update the existing entry.
 

@@ -6,7 +6,7 @@
 <title>{{NAME}} — CV</title>
 <style>
   /* ATS-safe typography (#font-extraction fix):
-     The bundled variable woff2 fonts (Space Grotesk / DM Sans) render with
+     Variable webfonts render with
      glyph advances that make PDF text extractors inject spurious spaces inside
      words (e.g. "SUM M ARY", "Germ any") — which corrupts ATS keyword parsing.
      This template's job is clean machine-readable parsing, so we use a standard
@@ -35,7 +35,7 @@
   }
 
   body {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif;
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'DejaVu Sans', sans-serif;
     font-size: 11px;
     line-height: 1.5;
     color: #1a1a2e;
@@ -60,7 +60,7 @@
   }
 
   .header h1 {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif;
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'DejaVu Sans', sans-serif;
     font-size: 28px;
     font-weight: 700;
     color: #1a1a2e;
@@ -80,7 +80,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px 14px;
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif;
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'DejaVu Sans', sans-serif;
     font-size: 10.5px;
     line-height: 1.4;
     color: #555;
@@ -117,7 +117,7 @@
   }
 
   .section-title {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif;
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'DejaVu Sans', sans-serif;
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
@@ -154,7 +154,7 @@
   }
 
   .competency-tag {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif;
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'DejaVu Sans', sans-serif;
     font-size: 10px;
     font-weight: 500;
     color: hsl(187, 74%, 28%);
@@ -178,7 +178,7 @@
   }
 
   .job-company {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif;
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'DejaVu Sans', sans-serif;
     font-size: 12.5px;
     font-weight: 600;
     color: #244a73;
@@ -216,41 +216,6 @@
 
   .job li strong {
     font-weight: 600;
-  }
-
-  /* === PROJECTS === */
-  .project {
-    margin-bottom: 12px;
-  }
-
-  .project-title {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif;
-    font-size: 11.5px;
-    font-weight: 600;
-    color: #244a73;
-  }
-
-  .project-badge {
-    font-size: 9px;
-    font-weight: 500;
-    color: hsl(187, 74%, 32%);
-    background: hsl(187, 40%, 95%);
-    padding: 1px 6px;
-    border-radius: 2px;
-    margin-left: 6px;
-  }
-
-  .project-desc {
-    font-size: 10.5px;
-    color: #444;
-    margin-top: 3px;
-    line-height: 1.55;
-  }
-
-  .project-tech {
-    font-size: 9.5px;
-    color: #888;
-    margin-top: 3px;
   }
 
   /* === EDUCATION === */
@@ -379,8 +344,7 @@
      orphaned at the bottom of a page. */
   .section-title,
   .job-company,
-  .job-role,
-  .project-title {
+  .job-role {
     break-after: avoid;
     page-break-after: avoid;
   }
@@ -395,7 +359,6 @@
   html[lang="ar"] .header h1,
   html[lang="ar"] .section-title,
   html[lang="ar"] .job-company,
-  html[lang="ar"] .project-title,
   html[lang="ar"] .competency-tag,
   html[lang="ar"] .skill-category {
     font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
@@ -408,11 +371,6 @@
   html[lang="ar"] .job ul {
     padding-right: 18px;
     padding-left: 0;
-  }
-
-  html[lang="ar"] .project-badge {
-    margin-right: 6px;
-    margin-left: 0;
   }
 
   html[lang="ar"] .cert-year {
@@ -432,11 +390,11 @@
   /* The bundled webfonts are Latin-only (see #951). Without a CJK fallback,
      Japanese text renders as tofu (□) in headless Chromium on any system
      without a CJK system font (Linux/CI, minimal containers). The Latin brand
-     fonts are kept first so ASCII still uses Space Grotesk / DM Sans, then the
+     Helvetica Neue remains first for Latin text, then the
      browser's per-glyph fallback picks the first installed CJK face for kana
      and kanji. Mirrors the lang="ar" precedent above. */
   html[lang="ja"] body {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
       'Yu Gothic', 'YuGothic', 'Noto Sans CJK JP', 'Noto Sans JP',
       Meiryo, 'MS PGothic', sans-serif;
   }
@@ -444,10 +402,9 @@
   html[lang="ja"] .header h1,
   html[lang="ja"] .section-title,
   html[lang="ja"] .job-company,
-  html[lang="ja"] .project-title,
   html[lang="ja"] .competency-tag,
   html[lang="ja"] .skill-category {
-    font-family: 'Liberation Sans', 'Helvetica Neue', Arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+    font-family: 'Helvetica Neue', 'Liberation Sans', Arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
       'Yu Gothic', 'YuGothic', 'Noto Sans CJK JP', 'Noto Sans JP',
       Meiryo, 'MS PGothic', sans-serif;
   }
@@ -492,21 +449,10 @@
     {{EXPERIENCE}}
   </div>
 
-  <!-- PROJECTS -->
-  <div class="section">
-    <div class="section-title">{{SECTION_PROJECTS}}</div>
-    {{PROJECTS}}
-  </div>
-
-  <!-- EDUCATION -->
+  <!-- EDUCATION AND CERTIFICATIONS -->
   <div class="section">
     <div class="section-title">{{SECTION_EDUCATION}}</div>
     {{EDUCATION}}
-  </div>
-
-  <!-- CERTIFICATIONS -->
-  <div class="section">
-    <div class="section-title">{{SECTION_CERTIFICATIONS}}</div>
     <div class="cert-table">{{CERTIFICATIONS}}</div>
   </div>
 

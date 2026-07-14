@@ -54,8 +54,8 @@
 #let contact-separator-color = rgb("#cccccc")
 
 // === Fonts ===
-#let base-font = ("Helvetica Neue", "Helvetica", "Liberation Sans")
-#let heading-font = ("Helvetica Neue", "Helvetica", "Liberation Sans")
+#let base-font = ("Helvetica Neue", "Liberation Sans")
+#let heading-font = ("Helvetica Neue", "Liberation Sans")
 #let base-size = 8.75pt
 #let base-leading = 5.5pt
 
@@ -101,20 +101,6 @@
 #let bullet-size = 7.875pt
 #let bullet-indent = 7pt
 #let bullet-gutter = 3.5pt
-
-// === Projects ===
-#let project-below = 10pt
-#let project-header-gutter = 3pt
-#let project-title-size = 8.25pt
-#let project-title-weight = 700
-#let project-badge-radius = 1.5pt
-#let project-badge-padding-x = 4.5pt
-#let project-badge-padding-y = 0.75pt
-#let project-badge-text-size = 6.75pt
-#let project-badge-text-weight = 500
-#let project-title-desc-gap = 1.5pt
-#let project-desc-size = 7.875pt
-#let project-tech-size = 7.125pt
 
 // === Education ===
 #let edu-below = 7pt
@@ -258,48 +244,6 @@
 ]
 
 // ══════════════════════════════════════════
-// PROJECTS
-// ══════════════════════════════════════════
-
-#let render-project(project) = [
-  #block(above: 0pt, below: project-below)[
-    #grid(
-      columns: (1fr, auto),
-      column-gutter: project-header-gutter,
-      [
-        #text(size: project-title-size, weight: project-title-weight, fill: purple)[#project.title]
-      ],
-      [
-        #if project.badge != "" [
-          #box(
-            fill: chip-fill,
-            radius: project-badge-radius,
-            inset: (x: project-badge-padding-x, y: project-badge-padding-y),
-          )[
-            #text(size: project-badge-text-size, weight: project-badge-text-weight, fill: accent)[#project.badge]
-          ]
-        ]
-      ],
-    )
-    #v(project-title-desc-gap)
-    #if project.description != "" [
-      #text(size: project-desc-size, fill: text-mid)[#project.description]
-      #linebreak()
-    ]
-    #if project.tech != "" [
-      #text(size: project-tech-size, fill: muted)[#project.tech]
-    ]
-  ]
-]
-
-#let render-projects(items) = if items.len() > 0 [
-  #render-section-title("PROJECTS")
-  #for project in items [
-    #render-project(project)
-  ]
-]
-
-// ══════════════════════════════════════════
 // EDUCATION + CERTIFICATIONS
 // ══════════════════════════════════════════
 
@@ -346,16 +290,12 @@
   ]
 ]
 
-#let render-education(items) = if items.len() > 0 [
-  #render-section-title("EDUCATION")
-  #for item in items [
+#let render-education-and-certifications(education, certifications) = if education.len() > 0 or certifications.len() > 0 [
+  #render-section-title("EDUCATION & CERTIFICATIONS")
+  #for item in education [
     #render-education-item(item)
   ]
-]
-
-#let render-certifications(items) = if items.len() > 0 [
-  #render-section-title("CERTIFICATIONS")
-  #for cert in items [
+  #for cert in certifications [
     #render-cert-item(cert)
   ]
 ]
@@ -407,7 +347,5 @@
 ]
 
 #render-experience(data.experience)
-#render-projects(data.projects)
-#render-education(data.education)
-#render-certifications(data.certifications)
+#render-education-and-certifications(data.education, data.certifications)
 #render-skills(data.skills)

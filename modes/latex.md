@@ -14,11 +14,14 @@ Export a tailored, ATS-optimized CV as a `.tex` file and compile it to PDF via `
 8. Select top 3-4 most relevant projects for the offer
 9. Reorder experience bullets by JD relevance
 10. Inject keywords naturally into existing achievements
-11. Build a JSON payload (see schema below) and write to `/tmp/cv-{candidate}-{company}.json`
-12. Run: `node build-cv-latex.mjs /tmp/cv-{candidate}-{company}.json output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex`
-13. Run: `node generate-latex.mjs output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf`
-    *(Replace `{candidate}`, `{company}`, `{YYYY-MM-DD}` with actual values.)*
-14. Report: .tex path, .pdf path, file sizes, section count, keyword coverage %
+11. Choose a concise role label that preserves the advertised level and core role. Run `node reserve-cv-output.mjs --company="{company}" --role="{short role}" --candidate="{candidate}" --date="{YYYY-MM-DD}"`.
+12. Build a JSON payload (see schema below) and write it to `/tmp/{reserved basename}.json`.
+13. Run `node build-cv-latex.mjs /tmp/{reserved basename}.json "{reserved tex path}"`.
+14. Run `node generate-latex.mjs "{reserved tex path}" "{reserved pdf path}"`.
+15. Release the reservation with `node reserve-cv-output.mjs --release="{reservation path}"` after both files exist, and release it on failure as well.
+16. Report: `.tex` path, `.pdf` path, file sizes, section count, keyword coverage %.
+
+Use the same resume basename as every other renderer: `cv-{company}-{short-role}-{candidate}-{YYYY-MM-DD}`. Collisions append `-v2`, then `-v3`; report numbers never appear in filenames. This rule applies only to resume artifacts and does not change cover-letter naming.
 
 **Requires:** `tectonic` (preferred — `brew install tectonic`, auto-downloads packages) or `pdflatex` (MiKTeX / TeX Live) on PATH.
 

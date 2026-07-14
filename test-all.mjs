@@ -1216,7 +1216,7 @@ if (!/Antes de interpretar|clasifica el|salario p\u00fablico|promesa contractual
 }
 
 const batchHtmlWritePath = batchPrompt.match(/dashboard HTML artifact to `([^`]+)`/)?.[1];
-const batchPdfInputPath = batchPrompt.match(/node generate-typst-pdf\.mjs \\\n\s+([^\s\\]+) \\/)?.[1];
+const batchPdfInputPath = batchPrompt.match(/node generate-typst-pdf\.mjs \\\n\s+"?([^"\n]+)"? \\/)?.[1];
 if (batchHtmlWritePath && batchHtmlWritePath === batchPdfInputPath) {
   pass('batch prompt renders the HTML path it writes');
 } else {
@@ -3703,7 +3703,7 @@ try {
 // ── 11b. TITLE FILTER — acronym word boundaries ──────────────────
 console.log('\n11b. Title filter — acronym word boundaries');
 try {
-  const { buildTitleFilter, compileKeyword } = await import(pathToFileURL(join(ROOT, 'scan.mjs')).href);
+  const { buildTitleFilter, compileKeyword, sortOffersByTitlePriority } = await import(pathToFileURL(join(ROOT, 'scan.mjs')).href);
 
   // Short all-letter acronyms match on WORD BOUNDARIES, not as substrings.
   const cooFilter = buildTitleFilter({ positive: ['coo'] });
@@ -3737,6 +3737,20 @@ try {
     pass('buildTitleFilter ignores non-string/empty keyword entries without crashing');
   } else {
     fail('buildTitleFilter should ignore non-string/empty keyword entries');
+  }
+
+  const prioritized = sortOffersByTitlePriority([
+    { title: 'AI Platform Engineer' },
+    { title: 'DevOps Engineer' },
+    { title: 'Backend Engineer' },
+    { title: 'Software Developer' },
+  ], {
+    priority: [['Backend'], ['Software Developer'], ['DevOps'], ['AI Platform']],
+  });
+  if (prioritized.map(offer => offer.title).join('|') === 'Backend Engineer|Software Developer|DevOps Engineer|AI Platform Engineer') {
+    pass('title priority orders backend roles before secondary scan lanes');
+  } else {
+    fail('title priority should order backend roles before secondary scan lanes');
   }
 
   // Whitespace-only keywords must be trimmed away, not compiled into matchers.

@@ -16,10 +16,11 @@
  *   OPENAI_MODEL (or --model)   — the model id
  */
 
-import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
+import { releaseCvOutput, reserveCvOutput } from './reserve-cv-output.mjs';
 
 try {
   const { config } = await import('dotenv');
@@ -37,7 +38,6 @@ const PATHS = {
   cv:       join(ROOT, 'cv.md'),
   profile:  join(ROOT, 'config', 'profile.yml'),
   template: join(ROOT, 'templates', 'cv-template.html'),
-  output:   join(ROOT, 'output'),
 };
 
 // ---------------------------------------------------------------------------
@@ -117,6 +117,9 @@ const reportText = readFileSync(reportPath, 'utf-8').trim();
 const reportFilename = basename(reportPath);
 const match = reportFilename.match(/^\d+-([a-z0-9-]+)-\d{4}-\d{2}-\d{2}\.md$/);
 const companySlug = match ? match[1] : 'unknown-company';
+const heading = reportText.match(/^#\s+(?:Evaluation:\s*)?(.+?)\s+(?:--|—|–)\s+(.+)$/m);
+const companyName = heading?.[1]?.trim() || companySlug;
+const roleName = heading?.[2]?.trim() || 'target-role';
 
 // ---------------------------------------------------------------------------
 // Endpoint + security guard.
@@ -276,37 +279,28 @@ tailoredHtml = tailoredHtml.replace(/^\s*```(html)?\s*/i, '').replace(/\s*```\s*
 // ---------------------------------------------------------------------------
 // Save tailored HTML
 // ---------------------------------------------------------------------------
+let reserved;
 try {
-  if (!existsSync(PATHS.output)) {
-    mkdirSync(PATHS.output, { recursive: true });
-  }
-
   let candidateName = 'candidate';
   try {
     const profile = yaml.load(profileContent);
-    if (profile && profile.name) {
-      candidateName = profile.name;
-    }
+    candidateName = profile?.candidate?.full_name || profile?.name || candidateName;
   } catch (err) {
     console.warn(`⚠️   Failed to parse profile.yml: ${err.message}`);
   }
-  candidateName = candidateName
-    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const now = new Date();
+  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+  reserved = reserveCvOutput({ company: companyName, role: roleName, candidate: candidateName, date });
+  writeFileSync(reserved.html, tailoredHtml, 'utf-8');
+  console.log(`\n✅  Tailored HTML saved: ${reserved.html}`);
 
-  const filename = `cv-${candidateName}-${companySlug}.html`;
-  const htmlPath = join(PATHS.output, filename);
-
-  writeFileSync(htmlPath, tailoredHtml, 'utf-8');
-  console.log(`\n✅  Tailored HTML saved: ${htmlPath}`);
-
-  // Print next steps
-  const pdfFilename = `cv-${candidateName}-${companySlug}-${new Date().toISOString().split('T')[0]}.pdf`;
   const reportNumMatch = reportFilename.match(/^(\d+)-/);
   const reportNum = reportNumMatch ? reportNumMatch[1] : '001';
 
-  console.log(`\n📄  Next step (generate PDF):\n    node generate-typst-pdf.mjs output/${filename} output/${pdfFilename} --format=letter --report=${reportNum}\n`);
+  console.log(`\n📄  Next steps:\n    node generate-typst-pdf.mjs "${reserved.html}" "${reserved.pdf}" --format=letter --report=${reportNum}\n    node reserve-cv-output.mjs --release="${reserved.reservation}"\n`);
 
 } catch (err) {
+  if (reserved) releaseCvOutput(reserved.reservation, dirname(reserved.reservation));
   console.warn(`⚠️   Could not save HTML: ${err.message}`);
   process.exit(1);
 }

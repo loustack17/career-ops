@@ -43,6 +43,7 @@ Examples:
 | llms.txt | `llms.txt` if it exists | Always |
 | CV templates | `templates/cv-template.typ` + `templates/cv-template.html` | Typst PDF + dashboard HTML |
 | PDF renderer | `generate-typst-pdf.mjs` | For every PDF |
+| CV output reservation | `reserve-cv-output.mjs` | Application-facing names and collision protection |
 | States | `templates/states.yml` | Tracker status labels |
 
 Rules:
@@ -296,7 +297,7 @@ Report header:
 **Score:** {X.X/5}
 **Legitimacy:** {High Confidence | Proceed with Caution | Suspicious}
 **URL:** {{URL}}
-**PDF:** {output/cv-candidate-{company-slug}-{{DATE}}.pdf if score >= resolved auto_pdf_score_threshold, otherwise a localized equivalent of `not generated — run /career-ops pdf {company-slug} to create on demand` in `language.output`}
+**PDF:** `pending filename reservation` if score >= resolved auto_pdf_score_threshold, otherwise a localized equivalent of `not generated — run /career-ops pdf {company-slug} to create on demand` in `language.output`}
 **Batch ID:** {{ID}}
 
 
@@ -364,20 +365,29 @@ If score is greater than or equal to the threshold:
 4. Choose paper format: US/Canada -> `letter`; otherwise `a4`.
 5. Adapt framing to the detected archetype.
 6. Rewrite the Professional Summary with real evidence and relevant keywords.
-7. Select the most relevant projects and proof points.
-8. Reorder experience bullets by relevance.
+7. Omit the Projects section and set `projects` to an empty array.
+8. Rewrite and reorder experience bullets by relevance. Keep 3-5 distinct bullets for every role that has at least 3 verified source bullets. Choose the structure from verified evidence: Impact/Outcome, Scope/Scale, Action/Problem, and How/Mechanism. Lead with a measured outcome when one exists; otherwise lead naturally with the problem, action, scope, or enabled capability. Scale may be traffic, users, engineers, APIs, clients, records, duration, system breadth, operational criticality, or team leverage. Each bullet needs one main claim and concrete proof, but does not need all four components. Never invent abstract value.
 9. Build a 6-8 item competency grid.
 10. Inject keywords ethically into existing achievements; never invent skills or metrics.
-11. Write the dashboard HTML artifact to `output/cv-candidate-{company-slug}.html` using `build-cv-html.mjs`; it embeds the structured payload for Typst regeneration.
-12. Run:
+11. Run a human-voice gate before rendering. Reject the draft if an eligible role has fewer than 3 bullets, its strongest relevant outcome or scale was dropped, bullets repeat the same sentence pattern, implementation inventories bury the claim, wording is stiff or abstract, or the candidate could not say it naturally in an interview. Prefer ordinary verbs and mix metric-first, problem-first, scope-first, action-first, and short technical bullets.
+12. Choose a concise role label that preserves the advertised level and core role. Reserve matching artifact paths:
+
+```bash
+node reserve-cv-output.mjs --company="{company}" --role="{short role}" --candidate="{candidate}" --date="{{DATE}}"
+```
+
+13. Use the returned `html`, `pdf`, and `reservation` paths exactly. Write the dashboard HTML artifact to `{reserved html path}` using `build-cv-html.mjs`; it embeds the structured payload for Typst regeneration.
+14. Run:
 
 ```bash
 node generate-typst-pdf.mjs \
-  output/cv-candidate-{company-slug}.html \
-  output/cv-candidate-{company-slug}-{{DATE}}.pdf \
+  "{reserved html path}" \
+  "{reserved pdf path}" \
   --format={letter|a4} \
   --report={{REPORT_NUM}}
 ```
+
+15. After both artifacts exist, replace `pending filename reservation` in the report header with the reserved PDF path, then run `node reserve-cv-output.mjs --release="{reservation path}"`. Release on failure as well. The report number remains internal metadata and never appears in the filename. The first collision uses `-v2`, then `-v3`; existing artifacts are never overwritten.
 
 On success, use `pdf_emoji` = `✅` and set `"pdf"` to the output path in the final JSON.
 
@@ -391,7 +401,7 @@ ATS rules:
 
 Design rules:
 
-- Space Grotesk for headings, DM Sans for body.
+- Helvetica Neue for headings and body, with Liberation Sans as the compatible fallback.
 - Self-hosted fonts from `fonts/`.
 - White background, 0.6in margins.
 - Keep the output readable and ATS-safe.

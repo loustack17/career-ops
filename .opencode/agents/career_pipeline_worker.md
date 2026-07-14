@@ -20,6 +20,7 @@ permission:
     "pwd": allow
     "rg *": allow
     "node generate-latex.mjs *": ask
+    "node reserve-cv-output.mjs *": allow
     "node generate-typst-pdf.mjs *": allow
     "typst --version": allow
     "typst compile *": allow
@@ -38,7 +39,7 @@ Context:
 - Use parent-provided core context and relevant mem0 report/resume/PDF/Typst/forbidden-content rules.
 - If parent omitted mem0 rules and report or PDF generation is assigned, search mem0 with filters `{"AND":[{"user_id":"career"},{"agent_id":"career-ops"},{"app_id":"opencode"}]}` for Career-Ops report, resume, PDF, Typst, proof-point, and forbidden-content rules.
 - Read `templates/cv-template.typ` before generating a resume PDF.
-- Read `modes/typst.md` for Typst compile commands, payload schema, and fallback rules.
+- Read `modes/typst.md` for required Typst compile commands and payload schema.
 - Read `modes/heuristics/recruiter-side.md` for recruiter-side risk map and six-second clarity gate before writing report summaries or generating PDFs.
 - Read `modes/_custom.md` if it exists — user house rules take precedence over defaults.
 - Do not write mem0.
@@ -75,6 +76,7 @@ Never:
 - edit system-layer or user profile files
 - invent facts
 - use Playwright/Chromium for resume or cover-letter PDF generation
-- call `node generate-pdf.mjs` or `node generate-cover-letter.mjs`
+- call `node generate-pdf.mjs` or `node generate-cover-letter.mjs`; use Typst for resume PDFs
+- construct resume filenames manually or overwrite existing artifacts; reserve the HTML/PDF pair with `reserve-cv-output.mjs` and release it after both artifacts exist or on failure
 
 Return artifact paths, score, status, PDF yes/no, and failures.

@@ -109,6 +109,7 @@ function main() {
   if (!input || !output) throw new Error('Usage: node generate-typst-pdf.mjs <input.json|dashboard.html> <output.pdf> [--format=letter|a4] [--report=NNN]');
   const inputPath = resolve(input);
   const outputPath = resolve(output);
+  if (existsSync(outputPath)) throw new Error(`Refusing to overwrite existing PDF: ${outputPath}`);
   const format = args.find(arg => arg.startsWith('--format='))?.split('=')[1] || 'letter';
   const report = args.find(arg => arg.startsWith('--report='))?.split('=')[1] || '';
   const payload = toTypstPayload(readPayload(inputPath));

@@ -197,13 +197,20 @@ node openai-tailor.mjs \
 
 **Cost:** ~3,000 tokens (less than $0.001). This outputs a customized HTML file in the `output/` directory.
 
-### Step 5: Generate ATS-Optimized PDF (0 Tokens)
+### Step 5: Generate ATS-Optimized Typst PDF (0 Tokens)
 
-Once you have the tailored HTML file, the PDF generator uses Playwright to compile it into a tailored CV PDF.
+`openai-tailor.mjs` reserves matching HTML and PDF paths using the application-facing resume convention and prints both paths. Use those exact values:
 
 ```bash
-node generate-pdf.mjs output/cv-candidate-companyname.html output/cv-candidate-companyname-2026-07-07.pdf --format=letter --report=001
+node generate-typst-pdf.mjs \
+  "output/2026-07-07/cv-companyname-backend-engineer-jane-smith-2026-07-07.html" \
+  "output/2026-07-07/cv-companyname-backend-engineer-jane-smith-2026-07-07.pdf" \
+  --format=letter \
+  --report=001
+node reserve-cv-output.mjs --release="output/2026-07-07/.cv-companyname-backend-engineer-jane-smith-2026-07-07.reserved"
 ```
+
+Resume artifacts always use `cv-{company}-{short-role}-{candidate}-{YYYY-MM-DD}`. Existing names receive `-v2`, then `-v3`. Cover letters retain their separate naming rule.
 
 **Cost:** 0 tokens, $0.00.
 

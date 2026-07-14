@@ -52,9 +52,13 @@ latex:
 }
 ```
 
-7. Run: `node patch-latex-content.mjs <source.tex> /tmp/cv-patches-{company}.json output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex`
-8. Run: `node generate-latex.mjs output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --compile-only`
-9. Report: family, slot count, patched count, `.tex` path, `.pdf` path (or compile error)
+7. Choose a concise role label that preserves the advertised level and core role. Run `node reserve-cv-output.mjs --company="{company}" --role="{short role}" --candidate="{candidate}" --date="{YYYY-MM-DD}"`.
+8. Run `node patch-latex-content.mjs <source.tex> /tmp/cv-patches-{company}.json "{reserved tex path}"`.
+9. Run `node generate-latex.mjs "{reserved tex path}" "{reserved pdf path}" --compile-only`.
+10. Release the reservation with `node reserve-cv-output.mjs --release="{reservation path}"` after both files exist, and release it on failure as well.
+11. Report: family, slot count, patched count, `.tex` path, `.pdf` path (or compile error).
+
+Use the same resume basename as every other renderer: `cv-{company}-{short-role}-{candidate}-{YYYY-MM-DD}`. Collisions append `-v2`, then `-v3`; report numbers never appear in filenames. This rule applies only to resume artifacts and does not change cover-letter naming.
 
 **Requires:** `tectonic` or `pdflatex` on PATH (same as `latex` mode).
 

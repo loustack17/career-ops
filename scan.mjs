@@ -106,6 +106,25 @@ export function buildTitleFilter(titleFilter) {
   };
 }
 
+export function sortOffersByTitlePriority(offers, titleFilter) {
+  const groups = Array.isArray(titleFilter?.priority) ? titleFilter.priority : [];
+  const matchers = groups.map(group => {
+    const keywords = Array.isArray(group) ? group : [group];
+    return keywords
+      .filter(keyword => typeof keyword === 'string' && keyword.trim())
+      .map(keyword => compileKeyword(keyword.trim().toLowerCase()));
+  });
+  const rank = offer => {
+    const title = String(offer?.title || '').toLowerCase();
+    const index = matchers.findIndex(group => group.some(match => match(title)));
+    return index === -1 ? matchers.length : index;
+  };
+  return offers
+    .map((offer, index) => ({ offer, index, rank: rank(offer) }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map(item => item.offer);
+}
+
 // Compiled-matcher cache for matchedTitleKeywords(), keyed by the
 // `title_filter.positive` array reference. The scan loop calls this once per
 // job with the same titleFilter config object, so caching avoids recompiling
@@ -1559,14 +1578,14 @@ async function main() {
   await parallelFetch(tasks, CONCURRENCY);
 
   // 5.5. Optional liveness verification — drop expired and guard-rejected postings
-  let verifiedOffers = newOffers;
+  let verifiedOffers = sortOffersByTitlePriority(newOffers, config.title_filter);
   let expiredOffers = [];
   let droppedOffers = [];
   let invalidOffers = [];
   let migratedOffers = [];
-  if (verify && newOffers.length > 0) {
-    console.log(`\nVerifying liveness of ${newOffers.length} new offer(s) with Playwright (sequential)...`);
-    const result = await verifyOffers(newOffers, { headedFallback, throttleBaseMs, rediscover });
+  if (verify && verifiedOffers.length > 0) {
+    console.log(`\nVerifying liveness of ${verifiedOffers.length} new offer(s) with Playwright (sequential)...`);
+    const result = await verifyOffers(verifiedOffers, { headedFallback, throttleBaseMs, rediscover });
     verifiedOffers = result.verified;
     expiredOffers = result.expired;
     droppedOffers = result.dropped;

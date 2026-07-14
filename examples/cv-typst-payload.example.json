@@ -1,16 +1,17 @@
 {
-  "meta": {
-    "candidate_name": "Lou Chang",
-    "company": "TextNow",
-    "role": "Site Reliability Engineer",
-    "language": "en",
-    "paper_size": "letter",
-    "source_jd": "examples/textnow-jd.txt",
-    "source_report": "reports/003-textnow-2026-04-07.md"
+  "lang": "en",
+  "page_format": "letter",
+  "company": "TextNow",
+  "role": "Backend Engineer",
+  "source_jd": "examples/textnow-jd.txt",
+  "source_report": "reports/003-textnow-2026-04-07.md",
+  "candidate": {
+    "name": "Lou Chang",
+    "location": "Toronto, ON"
   },
-  "summary": "Site reliability and platform-focused engineer with 5+ years building cloud infrastructure, CI/CD automation, and production-safe delivery systems. Recent work cut provisioning from 2+ hours to under 10 minutes with Terraform-driven environments and strengthened release reliability with quality gates, deploy-on-merge workflows, and tighter secret isolation.",
-  "core_competencies": [
-    "Site Reliability Engineering",
+  "summary": "Backend engineer with infrastructure depth and 5+ years building and stabilizing API and data systems across healthcare, finance, retail, and B2B platforms. Combines .NET/SQL and Python/FastAPI backend work with cloud delivery, Terraform, and CI/CD, including 20-30 REST APIs and a healthcare workflow cut from 5-8 minutes to 5 seconds.",
+  "competencies": [
+    "Backend Engineering",
     "Terraform",
     "AWS Infrastructure",
     "CI/CD Automation",
@@ -26,9 +27,9 @@
       "role": "Independent Software Engineer (Contract)",
       "period": "Sep. 2024 - Present",
       "bullets": [
-        "Designed the infrastructure, environment model, and CI/CD strategy to bring a startup from PoC to production-ready; migrated from AWS to GCP using Terraform with identity-based deployments and dev/prod environment separation, cutting provisioning from 2+ hours to under 10 minutes.",
-        "Hardened the CI/CD pipeline and release model: enforced quality gates on every PR with automated deploy-on-merge, pinned supply chain dependencies, isolated CI credentials, and scoped secrets per environment.",
-        "Built backend services for a commerce platform with Python, FastAPI, PostgreSQL, and domain-driven design, preserving a clean path from application work to production delivery."
+        "Moved a contract platform from an EC2-style deployment to Cloud Run. Split dev/prod resources, moved secrets to Secret Manager, and replaced long-lived CI credentials with Workload Identity Federation.",
+        "Refactored a FastAPI prototype into domain modules, added SQLAlchemy/Alembic persistence and runtime validation, and covered the new paths with pytest, pyright, and ruff.",
+        "Set up the project's first deployable AWS environment with Terraform-managed EC2, OIDC-based GitHub Actions, S3 remote state, Docker Compose, and CloudWatch health and log checks."
       ]
     },
     {
@@ -37,9 +38,10 @@
       "role": "Web Development Engineer",
       "period": "Jun. 2020 - Jan. 2024",
       "bullets": [
-        "Managed delivery infrastructure across Azure DevOps and self-hosted GitLab CE on Linux, maintaining pipeline reliability, runner availability, and deployment readiness while reducing release preparation overhead by 30+ minutes.",
-        "Restructured a critical reporting path from application-layer execution to database-native execution in SQL Server, resolving a recurring bottleneck across healthcare and finance platforms and cutting runtime from 3 minutes to 4 seconds.",
-        "Delivered backend services in ASP.NET Core for government research and financial services clients; provisioned and operated AWS environments with EC2, S3, and RDS for production and test workloads."
+        "Cut healthcare admin-page load time from 5-8 minutes to 5 seconds, with a 0.4-second best case, by moving multi-table query logic from AutoMapper into SQL Server procedures, views, and functions.",
+        "Created the company's first AWS dev/test environment for a 40-50 API financial-system takeover, removing the need for client VPN access; added 4-5 APIs and passed on-site acceptance.",
+        "Maintained GitLab CE and CI runners used by roughly 100-150 engineers. Built a production-like upgrade environment and automated recurring cleanup and maintenance with Bash and Cron.",
+        "Designed 20-30 REST APIs with JWT authentication, transaction-safe writes, NSwag documentation, structured logging, SQL Server, and Angular integration."
       ]
     },
     {
@@ -48,44 +50,32 @@
       "role": "ERP Application Development Engineer",
       "period": "Mar. 2019 - Jun. 2020",
       "bullets": [
-        "Sustained production stability and data integrity across B2B and internal ERP systems, managing 20+ monthly releases over 16 months against business-critical operational constraints.",
-        "Resolved 8+ critical production issues annually through structured debugging and query optimization; assessed infrastructure modernization paths for legacy system upgrades."
+        "Maintained order, inventory, quotation, and member workflows for a nationwide B2B platform used by IT / 3C resellers, enterprise customers, and internal sales teams.",
+        "Fixed production defects and cross-database query issues in AngularJS/.NET ERP code spanning SQL Server, PostgreSQL, and Oracle.",
+        "Built an Angular 8/.NET MVC 5 migration proof of concept and presented the approach to the ERP engineering team."
       ]
     }
   ],
-  "projects": [
-    {
-      "title": "Production Infrastructure Foundation",
-      "badge": "Most Relevant",
-      "description": "Built Terraform-based cloud environments, identity-based deployments, and release automation for a startup going from PoC to production.",
-      "tech": "Terraform, AWS, GCP, CI/CD"
-    },
-    {
-      "title": "Delivery Reliability Operations",
-      "badge": "",
-      "description": "Operated Linux-based CI/CD systems used by multiple teams and reduced release preparation overhead by 30+ minutes.",
-      "tech": "Azure DevOps, GitLab CE, Linux"
-    }
-  ],
+  "projects": [],
   "education": [
     {
       "title": "Diploma, Computer Programming",
-      "institution": "Seneca Polytechnic",
-      "year": "2024 - 2025",
+      "org": "Seneca Polytechnic",
+      "year": "2025",
       "description": ""
     },
     {
       "title": "Bachelor's, Information Management",
-      "institution": "Hwa Hsia University of Technology",
-      "year": "2018 - 2020",
+      "org": "Hwa Hsia University of Technology",
+      "year": "2020",
       "description": ""
     }
   ],
   "certifications": [
     {
-      "title": "AZ-900",
-      "issuer": "Microsoft",
-      "year": ""
+      "title": "Microsoft Certified: Azure Fundamentals (AZ-900)",
+      "org": "Microsoft",
+      "year": "2022"
     }
   ],
   "skills": [

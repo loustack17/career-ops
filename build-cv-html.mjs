@@ -32,9 +32,7 @@ const DEFAULT_SECTION_TITLES = {
   summary: 'Professional Summary',
   competencies: 'Core Competencies',
   experience: 'Work Experience',
-  projects: 'Projects',
-  education: 'Education',
-  certifications: 'Certifications',
+  education: 'Education & Certifications',
   skills: 'Skills',
 };
 
@@ -109,28 +107,6 @@ function buildExperience(entries) {
     <ul>
 ${bullets}
     </ul>
-  </div>`;
-  }).join('\n  ');
-}
-
-function buildProjects(entries) {
-  if (!Array.isArray(entries) || entries.length === 0) return '';
-  return entries.filter(Boolean).map(e => {
-    const badge = e.badge
-      ? `<span class="project-badge">${escapeHtml(e.badge)}</span>`
-      : '';
-    // Prefer a single description; fall back to joining bullets into one line so
-    // a bullets-shaped payload still renders inside the .project-desc block.
-    const descText = e.description
-      || (Array.isArray(e.bullets) ? e.bullets.filter(Boolean).join(' ') : '');
-    const desc = descText
-      ? `\n    <div class="project-desc">${escapeHtml(descText)}</div>`
-      : '';
-    const tech = e.tech
-      ? `\n    <div class="project-tech">${escapeHtml(e.tech)}</div>`
-      : '';
-    return `<div class="project">
-    <div class="project-title">${escapeHtml(e.name)}${badge}</div>${desc}${tech}
   </div>`;
   }).join('\n  ');
 }
@@ -227,11 +203,8 @@ function renderReport(payload) {
     COMPETENCIES: buildCompetencies(payload.competencies),
     SECTION_EXPERIENCE: escapeHtml(sectionTitles.experience),
     EXPERIENCE: buildExperience(payload.experience),
-    SECTION_PROJECTS: escapeHtml(sectionTitles.projects),
-    PROJECTS: buildProjects(payload.projects),
     SECTION_EDUCATION: escapeHtml(sectionTitles.education),
     EDUCATION: buildEducation(payload.education),
-    SECTION_CERTIFICATIONS: escapeHtml(sectionTitles.certifications),
     CERTIFICATIONS: buildCertifications(payload.certifications),
     SECTION_SKILLS: escapeHtml(sectionTitles.skills),
     SKILLS: buildSkills(payload.skills),
@@ -283,7 +256,6 @@ async function writeAndReport(html, absOutput, payload, extra = {}) {
     counts: {
       competencies: (payload.competencies || []).length,
       experienceEntries: (payload.experience || []).length,
-      projectEntries: (payload.projects || []).length,
       educationEntries: (payload.education || []).length,
       certificationEntries: (payload.certifications || []).length,
       skillCategories: (payload.skills || []).length,
@@ -376,12 +348,7 @@ async function runSelfTest() {
         'Reduced regression test time by 60% through parallel execution',
       ],
     }],
-    projects: [{
-      name: 'Test Project',
-      badge: 'Open Source',
-      tech: 'Python, FastAPI, Docker',
-      description: 'Built a REST API with automated test coverage exceeding 90%.',
-    }],
+    projects: [],
     education: [{
       title: 'Bachelor of Science in Computer Science',
       org: 'Test University',
