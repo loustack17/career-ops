@@ -6116,6 +6116,29 @@ try {
   } else {
     fail('Omitted greeting did not render cleanly (stray greeting markup or unreplaced token)');
   }
+
+  const withContactAndSignature = buildHtml({
+    candidate: {
+      name: 'Jane Doe',
+      linkedin: 'https://linkedin.com/in/jane-doe',
+      portfolio_url: 'https://jane.example.com',
+    },
+    letter: {
+      ...basePayload.letter,
+      closing: 'Sincerely,',
+      signature: 'Jane & Doe',
+    },
+  });
+  if (
+    withContactAndSignature.includes('>linkedin.com/in/jane-doe</a>')
+    && withContactAndSignature.includes('>jane.example.com</a>')
+    && withContactAndSignature.includes('<p style="margin:0 0 6pt 0">Sincerely,</p>')
+    && withContactAndSignature.includes('<p style="margin:0">Jane &amp; Doe</p>')
+  ) {
+    pass('Contact links and typed signature render with escaped display text');
+  } else {
+    fail('Contact links or typed signature rendered incorrectly');
+  }
 } catch (e) {
   fail(`Cover letter greeting test crashed: ${e.message}`);
 }

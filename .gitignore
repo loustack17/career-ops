@@ -9,6 +9,7 @@ data/assessments.tsv
 data/pipeline.md
 data/scan-history.tsv
 data/scan-runs.tsv
+data/scan-artifacts/
 data/blacklist.md
 data/pdf-index.tsv
 data/agent-inbox.md
@@ -91,6 +92,7 @@ plugins.lock
 
 # Generated
 .resolved-prompt-*
+/cover-payload-*.json
 node_modules/
 bun.lock
 bun.lockb

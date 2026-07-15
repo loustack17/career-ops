@@ -58,11 +58,17 @@ function buildContactLine(candidate) {
   }
   if (candidate.phone) parts.push(escapeHtml(candidate.phone));
   if (candidate.linkedin) {
-    parts.push(`<a href="${escapeHtml(asUrl(candidate.linkedin))}">LinkedIn</a>`);
+    const display = candidate.linkedin.replace(/^https?:\/\//, "");
+    parts.push(`<a href="${escapeHtml(asUrl(candidate.linkedin))}">${escapeHtml(display)}</a>`);
   }
   if (candidate.github) {
     const display = candidate.github.replace(/^https?:\/\//, "");
     parts.push(`<a href="${escapeHtml(asUrl(candidate.github))}">${escapeHtml(display)}</a>`);
+  }
+  if (candidate.portfolio || candidate.portfolio_url) {
+    const portfolio = candidate.portfolio || candidate.portfolio_url;
+    const display = portfolio.replace(/^https?:\/\//, "");
+    parts.push(`<a href="${escapeHtml(asUrl(portfolio))}">${escapeHtml(display)}</a>`);
   }
   return parts.join(" &nbsp;|&nbsp; ");
 }
@@ -132,11 +138,22 @@ export function buildHtml(payload, templatePath) {
   // Optional salutation (e.g. "Dear Jane Smith,"). Omitted -> no salutation,
   // preserving the original behavior for payloads that don't set it.
   const greetingBlock = letter.greeting ? `<p class="greeting">${escapeHtml(letter.greeting)}</p>` : "";
-  const closingBlock = letter.closing ? `<p>${escapeHtml(letter.closing)}</p>` : "";
+  const signatureName = letter.signature || candidate.name;
+  let closingBlock = "";
+  if (letter.closing) {
+    closingBlock = `<div class="signoff" style="margin-top:16pt">
+  <p style="margin:0 0 6pt 0">${escapeHtml(letter.closing)}</p>
+  <p style="margin:0">${escapeHtml(signatureName)}</p>
+</div>`;
+  } else if (signatureName) {
+    closingBlock = `<div class="signoff" style="margin-top:16pt"><p style="margin:0">${escapeHtml(signatureName)}</p></div>`;
+  }
   const languageClosingBlock = letter.language_closing
     ? `<p class="language-closing">${escapeHtml(letter.language_closing)}</p>`
     : "";
-  const problemsBlock = letter.problems_section ? `<p>${escapeHtml(letter.problems_section)}</p>` : "";
+  const problemsBlock = letter.problems_section
+    ? `<p style="margin-top:10pt; margin-bottom:0">${escapeHtml(letter.problems_section)}</p>`
+    : "";
 
   const replacements = {
     "{{NAME}}": escapeHtml(candidate.name),
